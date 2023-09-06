@@ -1,4 +1,4 @@
-# SC3020-project
+# SC3020-project-1
 
 ## Contributions
 This project was built by the following:
