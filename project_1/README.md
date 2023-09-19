@@ -1,5 +1,8 @@
 # SC3020-project-1
 
+## Getting Started
+https://code.visualstudio.com/docs/languages/cpp
+
 ## Contributions
 This project was built by the following:
 1. [Peh Yu Ze](https://github.com/pehyuze)
