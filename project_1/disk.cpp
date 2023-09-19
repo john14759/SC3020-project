@@ -1,12 +1,12 @@
-#include "memory_pool.h"
+#include "disk.h"
 
 #include <cstdlib>
 #include <iostream>
 
 using namespace std;
 
-MemoryPool::MemoryPool(uint size, usint blkSize, usint recordSize) {
-    startAdd = malloc(size);
+Disk::Disk(size_t size, size_t blkSize, size_t recordSize) {
+    startAddress = (uchar*)malloc(size);
     this->size = size;
     this->blkSize = blkSize;
     this->recordSize = recordSize;
@@ -14,11 +14,11 @@ MemoryPool::MemoryPool(uint size, usint blkSize, usint recordSize) {
     curBlkUsedMem = 0;
 }
 
-MemoryPool::~MemoryPool() {
-    delete startAdd;
+Disk::~Disk() {
+    free(startAddress);
 };
 
-bool MemoryPool::allocateBlock() {
+bool Disk::allocateBlock() {
     if (blkSize * (numUsedBlks + 1) > size) {
         cout << "Memory full" << endl;
         return false;
@@ -29,7 +29,7 @@ bool MemoryPool::allocateBlock() {
 }
 
 
-Record* MemoryPool::writeRecord() {
+Record* Disk::writeRecord() {
     Record* address;
     if (!deletedRecords.empty()) {
         address = deletedRecords.back();
@@ -38,16 +38,16 @@ Record* MemoryPool::writeRecord() {
     else {
         if (curBlkUsedMem + recordSize > blkSize) {
             if (!allocateBlock())
-                return;
+                return nullptr;
         }
-        address = (Record*)startAdd + numUsedBlks * blkSize + curBlkUsedMem;
+        address = reinterpret_cast<Record*>(startAddress + numUsedBlks * blkSize + curBlkUsedMem);
         curBlkUsedMem += recordSize;
     }
     return address;
 }
 
-void MemoryPool::deleteRecord(Record* address) {
-    fill(address, address + recordSize, '\0');
+void Disk::deleteRecord(Record* address) {
+    delete address;
     deletedRecords.push_back(address);
 }
 
