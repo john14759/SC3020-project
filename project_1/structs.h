@@ -12,7 +12,7 @@ struct Record {
     char pts_home;
     float fg_pct_home;
     float ft_pct_home;
-    float ft3_pct_home;
+    float fg3_pct_home;
     char ast_home;
     char reb_home;
     bool home_team_wins;
