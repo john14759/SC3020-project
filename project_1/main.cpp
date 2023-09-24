@@ -9,7 +9,7 @@
 #include <unordered_set>
 
 using namespace std;
-
+/*
 void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     //To change later after function is established
@@ -174,7 +174,7 @@ void experiment5(Disk *disk, BpTree *tree) {
     cout << endl;
 }
 
-
+*/
 
 int main() {
     Disk disk(500000, 400, sizeof(Record));

@@ -15,7 +15,7 @@ Node *BPTree::searchNode(float key)
 
     while (!curNode->isLeaf)
     {
-        //if current node is a non-leaf node
+        //if current node is a non-leaf node, it searches for the first key value that is larger than target key
         idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
         curNode = curNode->ptrs.at(idx);
         //this->numOfNodesAcc++;

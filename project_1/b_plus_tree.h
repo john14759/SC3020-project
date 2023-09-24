@@ -10,6 +10,7 @@ private:
     int numNodes;
     int depth;
     size_t blkSize;
+    int numOfNodesAcc;
 
 public:
     BPTree(int blkSize);
