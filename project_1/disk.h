@@ -18,6 +18,7 @@ private:
     bool allocateBlock();
 
 public:
+
     Disk(size_t size, size_t blkSize, size_t recordSize);
 
     ~Disk();
@@ -27,6 +28,8 @@ public:
     void deleteRecord(Record* address);
 
     int getNumBlks() {return numUsedBlks;}
+
+    int ReadFileIntoDisk();
 };
 
 #endif
