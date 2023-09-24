@@ -1,12 +1,9 @@
-#include "disk.h"
-#include "b_plus_tree.h"
+#include "utils.h"
+#include "lib/date.h"
+#include "storage/disk.h"
+#include "tree/b_plus_tree.h"
 
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <chrono>
-#include <unordered_set>
 
 using namespace std;
 
@@ -174,9 +171,11 @@ void experiment5(Disk *disk, BpTree *tree) {
     cout << endl;
 }*/
 
-
-
 int main() {
-    Disk disk(5000000, 400, sizeof(Record));
-    cout << disk.readFileIntoDisk() << endl;
+    Disk* disk = new Disk(500000000, 400, sizeof(Record));
+    cout << utils::readFileIntoDisk("games.txt", disk) << endl;
+    cout << disk->getNumBlks() << endl;
 }
+
+
+
