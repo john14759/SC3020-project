@@ -8,6 +8,8 @@
         "-fdiagnostics-color=always",
         "-g",
         "${fileDirname}/*.cpp",
+        "${fileDirname}/storage/*.cpp",
+        "${fileDirname}/tree/*.cpp",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe"
       ],

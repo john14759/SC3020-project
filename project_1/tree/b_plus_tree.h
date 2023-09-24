@@ -1,7 +1,7 @@
 #ifndef B_PLUS_TREE_H
 #define B_PLUS_TREE_H
 
-#include "structs.h"
+#include "../structs.h"
 
 class BPTree {
 private:

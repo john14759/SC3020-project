@@ -1,5 +1,5 @@
 #include "b_plus_tree.h"
-#include "structs.h"
+#include "../structs.h"
 #include <algorithm>
 
 Node *BPTree::searchNode(float key)
