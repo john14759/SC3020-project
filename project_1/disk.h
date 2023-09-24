@@ -23,13 +23,13 @@ public:
 
     ~Disk();
 
-    Record* writeRecord();
+    Record* writeRecord(Record record);
 
     void deleteRecord(Record* address);
 
     int getNumBlks() {return numUsedBlks;}
 
-    int ReadFileIntoDisk();
+    int readFileIntoDisk();
 };
 
 #endif

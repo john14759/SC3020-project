@@ -8,7 +8,7 @@
 
 using namespace std;
 
-int Disk::ReadFileIntoDisk() {
+int Disk::readFileIntoDisk() {
     ifstream inputFile;
 
     inputFile.open("games.txt");
@@ -42,17 +42,17 @@ int Disk::ReadFileIntoDisk() {
         // if (numOfRecords == 10) {
         //     break;
         // }
-        Record record;
-        record.game_date_est = GAME_Date_EST;
-        record.team_id_home = TEAM_ID_home;
-        record.pts_home = PTS_home;
-        record.fg_pct_home = FG_PCT_home;
-        record.ft_pct_home = FT_PCT_home;
-        record.fg3_pct_home = FG3_PCT_home;
-        record.ast_home = AST_home;
-        record.reb_home = REB_home;
-        record.home_team_wins = HOME_TEAM_WINS;
-
+        Record record = {
+            stoul(GAME_DATE_EST), 
+            stoul(TEAM_ID_home),
+            static_cast<char>(stoi(PTS_home)),
+            stof(FG_PCT_home),
+            stof(FT_PCT_home),
+            stof(FG3_PCT_home),
+            static_cast<char>(stoi(AST_home)),
+            static_cast<char>(stoi(REB_home)),
+            HOME_TEAM_WINS == "1" ? true : false
+        };
         writeRecord(record);
     }
 
@@ -111,16 +111,6 @@ Record* Disk::writeRecord(Record record) {
     // char reb_home;
     // bool home_team_wins;
     // };
-    recordAddress->game_date_est = record.game_date_est;
-    recordAddress->team_id_home = record.team_id_home;
-    recordAddress->pts_home = record.pts_home;
-    recordAddress->fg_pct_home = record.fg_pct_home;
-    recordAddress->ft_pct_home = record.ft_pct_home;
-    recordAddress->fg3_pct_home = record.fg3_pct_home;
-    recordAddress->ast_home = record.ast_home;
-    recordAddress->reb_home = record.reb_home;
-    recordAddress->home_team_wins = record.home_team_wins;
-
     if (!deletedRecords.empty()) {
         recordAddress = deletedRecords.back();
         deletedRecords.pop_back();
@@ -133,6 +123,17 @@ Record* Disk::writeRecord(Record record) {
         recordAddress = reinterpret_cast<Record*>(startAddress + numUsedBlks * blkSize + curBlkUsedMem);
         curBlkUsedMem += recordSize;
     }
+    *recordAddress = record;
+    cout << record.game_date_est << endl;
+    cout << record.team_id_home << endl;
+    cout << record.pts_home << endl;
+    cout << record.fg_pct_home << endl;
+    cout << record.ft_pct_home << endl;
+    cout << record.fg3_pct_home << endl;
+    cout << record.ast_home << endl;
+    cout << record.reb_home << endl;
+    cout << record.home_team_wins << endl;
+    cout << endl;
     return recordAddress;
 }
 

@@ -177,6 +177,6 @@ void experiment5(Disk *disk, BpTree *tree) {
 
 
 int main() {
-    Disk disk(500000, 400, sizeof(Record));
-    cout << disk.writeRecord() << endl;
+    Disk disk(5000000, 400, sizeof(Record));
+    cout << disk.readFileIntoDisk() << endl;
 }
