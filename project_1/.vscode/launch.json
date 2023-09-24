@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C/C++ Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "C:\\Users\\leedi\\Desktop\\Database\\SC3020-project\\project_1\\main.cpp", // Replace with the path to your C++ executable
+            "args": [], // Command-line arguments (if any)
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb", // For GDB debugger (can be "lldb" for LLDB on macOS)
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build", // Specify the name of your build task
+            "miDebuggerPath": "/path/to/your/debugger" // Replace with the path to your debugger (e.g., gdb or lldb)
+        }
+    ]
+}

@@ -18,6 +18,10 @@ public:
 
     Node* getRoot() {return root;}
 
+    Node* searchNode(float key);
+
+    std::vector<Record*>* searchRecord(float key);
+
 };
 
 #endif
