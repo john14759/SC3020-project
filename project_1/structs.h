@@ -3,11 +3,12 @@
 
 #include <vector>
 
+typedef unsigned short int usint;
 typedef unsigned int uint;
 typedef unsigned char uchar;
 
 struct Record {
-    uint game_date_est;
+    usint game_date_est; // days since epoch 
     uint team_id_home;
     char pts_home;
     float fg_pct_home;
