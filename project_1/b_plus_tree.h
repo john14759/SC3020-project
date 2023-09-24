@@ -18,10 +18,15 @@ public:
 
     Node* getRoot() {return root;}
 
-};
+    Node* searchNode(float key);
 
+    std::vector<Record*>* searchRecord(float key);
+    //returns a pointer to a vector containing Record pointers
+
+};
+/*
 //For the last experiment
-void BpTree::deleteRecordsBelowThreshold(float threshold) {
+void BPTree::deleteRecordsBelowThreshold(float threshold) {
     // Start from the root node and traverse the tree
     deleteRecordsBelowThreshold(root, threshold);
 }
@@ -57,5 +62,5 @@ void BpTree::deleteRecordsBelowThreshold(Node* node, float threshold) {
         deleteRecordsBelowThreshold(node->ptrs.back(), threshold);
     }
 }
-
+*/
 #endif
