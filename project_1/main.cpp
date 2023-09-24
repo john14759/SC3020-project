@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void experiment1(Disk *disk, BPTree *tree){
+/*void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     //To change later after function is established
     int numRecords = readFileIntoDisk(disk, tree);
@@ -172,7 +172,7 @@ void experiment5(Disk *disk, BpTree *tree) {
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
     cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     cout << endl;
-}
+}*/
 
 
 
