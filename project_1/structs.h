@@ -24,6 +24,7 @@ struct Node {
     std::vector<float> keys;
     std::vector<Node*> ptrs;
     std::vector<Record*> records;
+    Node* nextNodePtr;
 
     Node(bool isLeaf) {
         this->isLeaf = isLeaf;
