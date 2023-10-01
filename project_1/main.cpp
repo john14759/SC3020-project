@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "lib/date.h"
 #include "storage/disk.h"
+#include "storage/disk.cpp"
 #include "tree/b_plus_tree.h"
 
 #include <iostream>

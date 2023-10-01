@@ -46,6 +46,12 @@ namespace utils {
             getline(iss, AST_home, '\t');
             getline(iss, REB_home, '\t');
             getline(iss, HOME_TEAM_WINS, '\t');
+
+            // Added a condition to check for relevant Records
+            if (PTS_home == "") {
+                continue;
+            }
+
             Record record = {
                 usint(dateStringToDaysSinceEpoch(GAME_DATE_EST)),
                 stoul(TEAM_ID_home),
@@ -58,16 +64,16 @@ namespace utils {
                 HOME_TEAM_WINS == "1" ? true : false
             };
             (*disk).writeRecord(record);
-            // cout << record.game_date_est << endl;
-            // cout << record.team_id_home << endl;
-            // cout << int(record.pts_home) << endl;
-            // cout << record.fg_pct_home << endl;
-            // cout << record.ft_pct_home << endl;
-            // cout << record.fg3_pct_home << endl;
-            // cout << int(record.ast_home) << endl;
-            // cout << int(record.reb_home) << endl;
-            // cout << record.home_team_wins << endl;
-            // cout << endl;
+            cout << record.game_date_est << endl;
+            cout << record.team_id_home << endl;
+            cout << int(record.pts_home) << endl;
+            cout << record.fg_pct_home << endl;
+            cout << record.ft_pct_home << endl;
+            cout << record.fg3_pct_home << endl;
+            cout << int(record.ast_home) << endl;
+            cout << int(record.reb_home) << endl;
+            cout << record.home_team_wins << endl;
+            cout << endl;
             numOfRecords++;
             // if (numOfRecords == 50)
             //     break;
