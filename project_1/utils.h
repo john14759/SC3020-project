@@ -22,7 +22,7 @@ namespace utils {
         return date::sys_days{ymd}.time_since_epoch().count();
     }
 
-    int readFileIntoDisk(std::string fileName, Disk* disk) {
+    int readFileIntoDisk(std::string fileName, Disk* disk, BPTree* tree) {
         ifstream inputFile;
         inputFile.open(fileName);
         if (inputFile.is_open()) {
@@ -65,7 +65,7 @@ namespace utils {
             };
 
             Record* recordPtr = (*disk).writeRecord(record);
-            
+            tree->insert(stof(FG_PCT_home), recordPtr);
             // Insert record to tree here!!!!
             // cout << record.game_date_est << endl;
             // cout << record.team_id_home << endl;
@@ -78,8 +78,7 @@ namespace utils {
             // cout << record.home_team_wins << endl;
             // cout << endl;
             numOfRecords++;
-            // if (numOfRecords == 50)
-            //     break;
+           
         }
         inputFile.close();
         return numOfRecords;

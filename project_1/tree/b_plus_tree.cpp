@@ -1,7 +1,7 @@
 #include "b_plus_tree.h"
 
 #include <iostream>
-#include <vector>
+#include <queue>
 
 using namespace std;
 
@@ -19,20 +19,21 @@ void BPTree::printNode(Node* node) {
     cout << "[ ";
     for (float key : node->keys)
         cout << key << " ";
-    cout << "] ";
+    cout << "]\n";
 }
 
 void BPTree::printTree() {
-    vector<Node*> q;
-    q.push_back(root);
+    queue<Node*> q;
+    q.push(root);
     while (!q.empty()) {
-        int n = q.size()
+        int n = q.size();
         for (int i = 0; i < n; i++) {
             Node* node = q.front();
+            q.pop();
             printNode(node);
             if (!node->isLeaf) {
                 for (Node* child : node->ptrs)
-                    q.push_back(child);
+                    q.push(child);
             }
         }
         cout << endl;

@@ -11,7 +11,7 @@ private:
     int depth;
     size_t blkSize;
 
-    void printNode(Node node);
+    void printNode(Node* node);
 
 public:
     BPTree(int blkSize);
@@ -19,6 +19,12 @@ public:
     ~BPTree();
 
     Node* getRoot() {return root;}
+
+    int getMaxKeys() {return maxKeys;}
+
+    int getNumNodes() {return numNodes;}
+
+    int getDepth() {return depth;}
 
     Node* searchNode(float key);
 
@@ -32,6 +38,7 @@ public:
     Node* splitLeafNode(Node* currNode);
 
     Node* splitInternalNode(Node* currNode, float* key);
+
 };
 /*
 //For the last experiment
