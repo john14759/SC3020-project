@@ -20,6 +20,8 @@ public:
 
     Node* getRoot() {return root;}
 
+    void setRoot(Node *node);
+
     Node* searchNode(float key);
 
     void insert(float key, Record *recordPtr);
@@ -32,6 +34,14 @@ public:
     Node* splitLeafNode(Node* currNode);
 
     Node* splitInternalNode(Node* currNode, float* key);
+
+    void deleteKey(float key);
+    
+    Node *findParentNode(Node *currNode, Node *childNode);
+    
+    void removeInternal(int key, Node *parentNode, Node *nodeToDelete);
+    
+    void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
 };
 /*
 //For the last experiment
