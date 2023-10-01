@@ -173,8 +173,12 @@ void experiment5(Disk *disk, BpTree *tree) {
 
 int main() {
     Disk* disk = new Disk(500000000, 400, sizeof(Record));
-    cout << utils::readFileIntoDisk("games.txt", disk) << endl;
-    cout << disk->getNumBlks() << endl;
+    BPTree* tree = new BPTree(400);
+    cout << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
+    cout << tree->getMaxKeys() << endl;
+    cout << tree->getNumNodes() << endl;
+    cout << tree->getDepth() << endl;
+    tree->printTree();
 }
 
 
