@@ -63,17 +63,21 @@ namespace utils {
                 static_cast<char>(stoi(REB_home)),
                 HOME_TEAM_WINS == "1" ? true : false
             };
-            (*disk).writeRecord(record);
-            cout << record.game_date_est << endl;
-            cout << record.team_id_home << endl;
-            cout << int(record.pts_home) << endl;
-            cout << record.fg_pct_home << endl;
-            cout << record.ft_pct_home << endl;
-            cout << record.fg3_pct_home << endl;
-            cout << int(record.ast_home) << endl;
-            cout << int(record.reb_home) << endl;
-            cout << record.home_team_wins << endl;
-            cout << endl;
+            Record* recordPtr = (*disk).writeRecord(record);
+            
+            // Insert record to tree here!!!!
+
+            
+            // cout << record.game_date_est << endl;
+            // cout << record.team_id_home << endl;
+            // cout << int(record.pts_home) << endl;
+            // cout << record.fg_pct_home << endl;
+            // cout << record.ft_pct_home << endl;
+            // cout << record.fg3_pct_home << endl;
+            // cout << int(record.ast_home) << endl;
+            // cout << int(record.reb_home) << endl;
+            // cout << record.home_team_wins << endl;
+            // cout << endl;
             numOfRecords++;
             // if (numOfRecords == 50)
             //     break;

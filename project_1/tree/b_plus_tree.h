@@ -20,9 +20,14 @@ public:
 
     Node* searchNode(float key);
 
+    void insert(float key, Record *recordPtr);
+
     std::vector<Record*>* searchRecord(float key);
     //returns a pointer to a vector containing Record pointers
 
+    Node* splitLeafNode(Node* currNode);
+
+    Node* splitInternalNode(Node* currNode, float* key);
 };
 /*
 //For the last experiment
