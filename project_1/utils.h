@@ -63,11 +63,10 @@ namespace utils {
                 static_cast<char>(stoi(REB_home)),
                 HOME_TEAM_WINS == "1" ? true : false
             };
+
             Record* recordPtr = (*disk).writeRecord(record);
             
             // Insert record to tree here!!!!
-
-            
             // cout << record.game_date_est << endl;
             // cout << record.team_id_home << endl;
             // cout << int(record.pts_home) << endl;

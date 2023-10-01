@@ -11,6 +11,8 @@ private:
     int depth;
     size_t blkSize;
 
+    void printNode(Node node);
+
 public:
     BPTree(int blkSize);
 
@@ -24,6 +26,8 @@ public:
 
     std::vector<Record*>* searchRecord(float key);
     //returns a pointer to a vector containing Record pointers
+
+    void printTree();
 
     Node* splitLeafNode(Node* currNode);
 
