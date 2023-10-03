@@ -1,8 +1,9 @@
 #ifndef DISK_H
 #define DISK_H
 
-#include "structs.h"
+#include "../structs.h"
 
+#include <string>
 #include <vector>
  
 class Disk {
@@ -13,7 +14,6 @@ private:
     size_t recordSize;
     uint numUsedBlks;
     size_t curBlkUsedMem; // used memory in the current block
-    std::vector<Record*> deletedRecords; // addresses of free space available from deleted records
 
     bool allocateBlock();
 
@@ -22,7 +22,7 @@ public:
 
     ~Disk();
 
-    Record* writeRecord();
+    Record* writeRecord(Record record);
 
     void deleteRecord(Record* address);
 

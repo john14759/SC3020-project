@@ -1,16 +1,13 @@
-#include "disk.h"
-#include "b_plus_tree.h"
+#include "utils.h"
+#include "lib/date.h"
+#include "storage/disk.h"
+#include "tree/b_plus_tree.h"
 
 #include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <chrono>
-#include <unordered_set>
 
 using namespace std;
-/*
-void experiment1(Disk *disk, BPTree *tree){
+
+/*void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     //To change later after function is established
     int numRecords = readFileIntoDisk(disk, tree);
@@ -172,11 +169,17 @@ void experiment5(Disk *disk, BpTree *tree) {
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
     cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     cout << endl;
+}*/
+
+int main() {
+    Disk* disk = new Disk(500000000, 400, sizeof(Record));
+    BPTree* tree = new BPTree(400);
+    cout << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
+    cout << tree->getMaxKeys() << endl;
+    cout << tree->getNumNodes() << endl;
+    cout << tree->getDepth() << endl;
+    tree->printTree();
 }
 
 */
 
-int main() {
-    Disk disk(500000, 400, sizeof(Record));
-    cout << disk.writeRecord() << endl;
-}

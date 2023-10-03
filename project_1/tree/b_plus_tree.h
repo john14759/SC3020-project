@@ -1,7 +1,7 @@
 #ifndef B_PLUS_TREE_H
 #define B_PLUS_TREE_H
 
-#include "structs.h"
+#include "../structs.h"
 
 class BPTree {
 private:
@@ -12,6 +12,8 @@ private:
     size_t blkSize;
     int numOfNodesAcc;
 
+    void printNode(Node* node);
+
 public:
     BPTree(int blkSize);
 
@@ -19,11 +21,39 @@ public:
 
     Node* getRoot() {return root;}
 
+<<<<<<< HEAD
+    void setRoot(Node *node);
+=======
+    int getMaxKeys() {return maxKeys;}
+
+    int getNumNodes() {return numNodes;}
+
+    int getDepth() {return depth;}
+>>>>>>> 4a4fbfea4a5d97b774cdb520c40f972f2861fb17
+
     Node* searchNode(float key);
+
+    void insert(float key, Record *recordPtr);
 
     std::vector<Record*>* searchRecord(float key);
     //returns a pointer to a vector containing Record pointers
 
+    void printTree();
+
+    Node* splitLeafNode(Node* currNode);
+
+    Node* splitInternalNode(Node* currNode, float* key);
+
+<<<<<<< HEAD
+    void deleteKey(float key);
+    
+    Node *findParentNode(Node *currNode, Node *childNode);
+    
+    void removeInternal(int key, Node *parentNode, Node *nodeToDelete);
+    
+    void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
+=======
+>>>>>>> 4a4fbfea4a5d97b774cdb520c40f972f2861fb17
 };
 /*
 //For the last experiment

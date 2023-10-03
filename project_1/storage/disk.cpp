@@ -1,6 +1,9 @@
 #include "disk.h"
 
 #include <cstdlib>
+#include <string>
+#include <fstream>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -28,27 +31,21 @@ bool Disk::allocateBlock() {
     return true;
 }
 
-
-Record* Disk::writeRecord() {
-    Record* address;
-    if (!deletedRecords.empty()) {
-        address = deletedRecords.back();
-        deletedRecords.pop_back();
+Record* Disk::writeRecord(Record record) {
+    if (curBlkUsedMem + recordSize > blkSize) {
+        if (!allocateBlock())
+            return nullptr;
     }
-    else {
-        if (curBlkUsedMem + recordSize > blkSize) {
-            if (!allocateBlock())
-                return nullptr;
-        }
-        address = reinterpret_cast<Record*>(startAddress + numUsedBlks * blkSize + curBlkUsedMem);
-        curBlkUsedMem += recordSize;
-    }
-    return address;
+    Record* recordAddress = reinterpret_cast<Record*>(startAddress + numUsedBlks * blkSize + curBlkUsedMem);
+    if (numUsedBlks == 0)
+        numUsedBlks++;
+    curBlkUsedMem += recordSize;
+    *recordAddress = record;
+    return recordAddress;
 }
 
 void Disk::deleteRecord(Record* address) {
     delete address;
-    deletedRecords.push_back(address);
 }
 
 
