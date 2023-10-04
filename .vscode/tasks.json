@@ -1,9 +1,11 @@
+//  C:\\msys64\\mingw64\\bin\\g++.exe (LDZ)
+//  C:\\Users\\john1\\mingw64\\bin\\g++.exe (John)
 {
   "tasks": [
     {
       "type": "cppbuild",
       "label": "C/C++: g++.exe build active file",
-      "command": "C:\\msys64\\mingw64\\bin\\g++.exe",
+      "command": "C:\\Users\\john1\\mingw64\\bin\\g++.exe",
       "args": [
         "-fdiagnostics-color=always",
         "-g",
