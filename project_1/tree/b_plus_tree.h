@@ -52,7 +52,9 @@ public:
 
     void printNode(Node* node);
 
-    void setNumOfNodesAcc(int num);
+    void setNumOfNodesAccessed(int num) {
+        this->numOfNodesAcc = num;
+    }
 
     int getNumOfNodesAccessed() {
         return numOfNodesAcc;

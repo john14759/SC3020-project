@@ -31,7 +31,7 @@ public:
 
     int getBlockSize(){return blkSize;} 
 
-    int getmaxRecordsperBlock(){return maxRecordsperBlock;}
+    int getMaxRecordsPerBlock(){return maxRecordsperBlock;}
 
      
 
