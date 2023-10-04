@@ -10,7 +10,7 @@ Node *BPTree::searchNode(float key)
     }
 
     Node *curNode = getRoot();
-    float idx;
+    int idx;
     //this->numOfNodesAcc++;
 
     while (!curNode->isLeaf)
@@ -32,7 +32,7 @@ std::vector<Record *>* BPTree::searchRecord(float key)
     }
 
     Node *curNode = getRoot();
-    float idx;
+    int idx;
     //this->numOfNodesAcc++;
 
     while (!curNode->isLeaf)
@@ -45,9 +45,10 @@ std::vector<Record *>* BPTree::searchRecord(float key)
     idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
     if (idx < curNode->keys.size() && curNode->keys.at(idx) == key)
     {
-        std::vector<Record*>* result = new std::vector<Record*>;
+        return &(curNode->records.at(idx));
+        /*std::vector<Record*>* result = new std::vector<Record*>;
         result->push_back(curNode->records.at(idx));
-        return result;
+        return result;*/
     }
 
     return nullptr;

@@ -29,7 +29,7 @@ void BPTree::insert(float key, Record *recordPtr) {
         this->numNodes++;
         this->depth++;
         this->root->keys.push_back(key);
-        this->root->records.push_back(recordPtr);
+        this->root->records.push_back(std::vector<Record *>(1, recordPtr));
         this->root->nextNodePtr = nullptr;
         return;
     }
@@ -49,7 +49,7 @@ void BPTree::insert(float key, Record *recordPtr) {
     // Case 2: Leaf node keys < max keys
     index = std::upper_bound(currNode->keys.begin(), currNode->keys.end(), key) - currNode->keys.begin();
     currNode->keys.insert(currNode->keys.begin() + index, key);
-    currNode->records.insert(currNode->records.begin() + index, recordPtr);
+    currNode->records.insert(currNode->records.begin() + index, std::vector<Record*>(1, recordPtr));
 
     // Case 3: Leaf node keys == max keys
     if (currNode->keys.size() > this->maxKeys) {

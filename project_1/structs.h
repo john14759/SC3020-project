@@ -23,7 +23,7 @@ struct Node {
     bool isLeaf;
     std::vector<float> keys;
     std::vector<Node*> ptrs;
-    std::vector<Record*> records;
+    std::vector<std::vector<Record*>> records;
     Node* nextNodePtr;
 
     Node(bool isLeaf) {

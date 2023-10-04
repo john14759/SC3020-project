@@ -22,6 +22,11 @@ void BPTree::printNode(Node* node) {
     cout << "]\n";
 }
 
+void BPTree::setRoot(Node* r){
+    this->root = r;
+    return;
+}
+
 void BPTree::printTree() {
     queue<Node*> q;
     q.push(root);
