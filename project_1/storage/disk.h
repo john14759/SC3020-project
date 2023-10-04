@@ -14,6 +14,7 @@ private:
     size_t recordSize;
     uint numUsedBlks;
     size_t curBlkUsedMem; // used memory in the current block
+    size_t maxRecordsperBlock;
 
     bool allocateBlock();
 
@@ -27,6 +28,13 @@ public:
     void deleteRecord(Record* address);
 
     int getNumBlks() {return numUsedBlks;}
+
+    int getBlockSize(){return blkSize;} 
+
+    int getmaxRecordsperBlock(){return maxRecordsperBlock;}
+
+     
+
 };
 
 #endif

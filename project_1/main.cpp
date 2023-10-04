@@ -7,33 +7,31 @@
 
 using namespace std;
 
-/*void experiment1(Disk *disk, BPTree *tree){
+void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
-    //To change later after function is established
-    int numRecords = readFileIntoDisk(disk, tree);
-     cout << "Number of records: " << numRecords << endl;
+    cout << "Number of records: " << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
-    //To change later after function is established
-    cout << "Number of records stored in a block: " << disk->getRecordsPerBlock() << endl;
+    cout << "Number of records stored in a block: " << disk->getmaxRecordsperBlock() << endl;
     cout << "Number of blocks used: " << disk->getNumBlks() << endl;
-    //To change later after function is established
-    cout << "Total Memory Used: " << disk->getTotalUsedMemory() / pow(2, 20) << " MB" << endl;
-
 }
+
 
 void experiment2(BPTree *tree) {
     cout << "Experiment 2:" << endl;
-    cout << "Instantiating B+ Tree" << endl;
-    cout << " -> Nodes bounded by block size of = " << tree->getBlockSize() << endl;
-    cout << " -> Maximum number of keys in a node: n = " << tree->getMaxKeys() << endl;
-    cout << "Parameter N = " << tree->getMaxKeys() << endl;
-    cout << "Number of nodes = " << tree->getTotalNumOfNodes() << endl;
+    cout << "Printing B+ tree out:" << endl;
+    cout << " " << endl;
+    tree->printTree();
+    //cout << " -> Nodes bounded by block size of = " << tree->getBlockSize() << endl;
+    //cout << " -> Maximum number of keys in a node: n = " << tree->getMaxKeys() << endl;
+    cout << "Parameter n of the B+ tree = " << tree->getMaxKeys() << endl;
+    cout << "Number of nodes = " << tree->getNumNodes() << endl;
     cout << "Number of levels = " << tree->getDepth() << endl;
     cout << "Content of Root Node: ";
-    tree->displayKeys(tree->getRoot());
+    tree->printNode(tree->getRoot());
     cout << endl;
 }
 
+/*
 void experiment3(Disk *disk, BPTree *tree) {
     tree->setNumOfNodesAccessed(0);
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
@@ -174,11 +172,15 @@ void experiment5(Disk *disk, BpTree *tree) {
 int main() {
     Disk* disk = new Disk(500000000, 400, sizeof(Record));
     BPTree* tree = new BPTree(400);
-    cout << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
-    cout << tree->getMaxKeys() << endl;
-    cout << tree->getNumNodes() << endl;
-    cout << tree->getDepth() << endl;
-    tree->printTree();
+    //cout << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
+    experiment1(disk, tree);
+    cout << "" << endl;
+    experiment2(tree);
+    //cout << tree->getMaxKeys() << endl;
+    //cout << tree->getNumNodes() << endl;
+    //cout << tree->getDepth() << endl;
+    
+    
 }
 
 

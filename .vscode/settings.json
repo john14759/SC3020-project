@@ -72,7 +72,17 @@
     "ranges": "cpp",
     "span": "cpp",
     "stop_token": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "*.tcc": "cpp",
+    "cstdarg": "cpp",
+    "cwctype": "cpp",
+    "unordered_map": "cpp",
+    "functional": "cpp",
+    "memory_resource": "cpp",
+    "numeric": "cpp",
+    "random": "cpp",
+    "numbers": "cpp",
+    "variant": "cpp"
   },
   "C_Cpp.errorSquiggles": "enabled"
 }

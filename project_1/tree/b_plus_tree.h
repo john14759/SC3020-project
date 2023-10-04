@@ -11,7 +11,7 @@ private:
     int depth;
     size_t blkSize;
 
-    void printNode(Node* node);
+    
 
 public:
     BPTree(int blkSize);
@@ -48,6 +48,8 @@ public:
     void removeInternal(int key, Node *parentNode, Node *nodeToDelete);
     
     void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
+
+    void printNode(Node* node);
 };
 /*
 //For the last experiment

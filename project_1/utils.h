@@ -26,7 +26,7 @@ namespace utils {
         ifstream inputFile;
         inputFile.open(fileName);
         if (inputFile.is_open()) {
-            std::cout << "File is Open" << std::endl;
+            //std::cout << "File is Open" << std::endl;
         } else {
             std::cout << "File failed to Open" << std::endl;
         }
@@ -81,6 +81,7 @@ namespace utils {
            
         }
         inputFile.close();
+
         return numOfRecords;
     }
 }

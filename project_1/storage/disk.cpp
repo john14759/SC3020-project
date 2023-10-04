@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 
@@ -15,6 +16,8 @@ Disk::Disk(size_t size, size_t blkSize, size_t recordSize) {
     this->recordSize = recordSize;
     numUsedBlks = 0;
     curBlkUsedMem = 0;
+
+    maxRecordsperBlock = floor(blkSize / recordSize);
 }
 
 Disk::~Disk() {
@@ -47,6 +50,7 @@ Record* Disk::writeRecord(Record record) {
 void Disk::deleteRecord(Record* address) {
     delete address;
 }
+
 
 
 
