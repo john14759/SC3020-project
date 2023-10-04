@@ -1,5 +1,6 @@
 #include "b_plus_tree.h"
 #include <algorithm>
+#include <iostream>
 
 void BPTree::deleteKey(float key)
 {

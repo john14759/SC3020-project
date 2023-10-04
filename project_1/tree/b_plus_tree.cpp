@@ -40,3 +40,7 @@ void BPTree::printTree() {
     }
 }
 
+void BPTree::setRoot(Node *r){
+    this->root = r;
+    return;
+}
