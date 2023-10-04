@@ -31,9 +31,9 @@ void experiment2(BPTree *tree) {
     cout << endl;
 }
 
-/*
+
 void experiment3(Disk *disk, BPTree *tree) {
-    tree->setNumOfNodesAccessed(0);
+    tree->setNumOfNodesAcc(0);
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     vector<Record *> *result = tree->searchRecord(0.5);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
@@ -47,12 +47,13 @@ void experiment3(Disk *disk, BPTree *tree) {
     }
     total_FG_PCT_home /= result->size();
 
+    //Brute-force method of accessing the data from the disk directly
     int numOfBlocksAccessed = 0;
     Record *r;
     before = chrono::high_resolution_clock::now();
-    for (int i = 0; i < disk->getBlocksUsed(); i++) {
+    for (int i = 0; i < disk->getNumBlks(); i++) {
         numOfBlocksAccessed++;
-        for (int j = 0; j < disk->getRecordsPerBlock(); j++) {
+        for (int j = 0; j < disk->getmaxRecordsperBlock(); j++) {
             r = disk->getRecord(i, j);
             if (r->fg_pct_home == 0.5) {
                 continue;
@@ -72,6 +73,7 @@ void experiment3(Disk *disk, BPTree *tree) {
     cout << endl;
 }
 
+/*
 void experiment4(Disk *disk, BPTree *tree) {
     vector<Record *> result;
     vector<int> keys;

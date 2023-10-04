@@ -10,6 +10,7 @@ private:
     int numNodes;
     int depth;
     size_t blkSize;
+    int numOfNodesAcc;
 
     
 
@@ -50,6 +51,12 @@ public:
     void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
 
     void printNode(Node* node);
+
+    void setNumOfNodesAcc(int num);
+
+    int getNumOfNodesAccessed() {
+        return numOfNodesAcc;
+    }
 };
 /*
 //For the last experiment
