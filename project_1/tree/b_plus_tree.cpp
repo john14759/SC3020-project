@@ -45,3 +45,6 @@ void BPTree::printTree() {
     }
 }
 
+void BPTree::setNumOfNodesAcc(int num){
+    this->numOfNodesAcc = num;
+}
