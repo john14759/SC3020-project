@@ -64,20 +64,23 @@ namespace utils {
                 HOME_TEAM_WINS == "1" ? true : false
             };
 
+            // record.fg3_pct_home == stof(FG3_PCT_home)
+
             Record* recordPtr = (*disk).writeRecord(record);
-            tree->insert(stof(FG_PCT_home), recordPtr);
-            // Insert record to tree here!!!!
-            // cout << record.game_date_est << endl;
-            // cout << record.team_id_home << endl;
-            // cout << int(record.pts_home) << endl;
-            // cout << record.fg_pct_home << endl;
-            // cout << record.ft_pct_home << endl;
-            // cout << record.fg3_pct_home << endl;
-            // cout << int(record.ast_home) << endl;
-            // cout << int(record.reb_home) << endl;
+            tree->insert(record.fg3_pct_home, recordPtr);
+            // cout << record.game_date_est << " ";
+            // cout << record.team_id_home << " ";
+            // cout << int(record.pts_home) << " ";
+            // cout << record.fg_pct_home << " ";
+            // cout << record.ft_pct_home << " ";
+            // cout << record.fg3_pct_home << " ";
+            // cout << int(record.ast_home) << " ";
+            // cout << int(record.reb_home) << " ";
             // cout << record.home_team_wins << endl;
             // cout << endl;
             numOfRecords++;
+            // if (numOfRecords == 26000)
+            //     break;
            
         }
         inputFile.close();
