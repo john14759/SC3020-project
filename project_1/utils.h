@@ -9,6 +9,10 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+// Including these cause my compiler is shit
+#include "storage/disk.cpp"
+#include "tree/tree_insert.cpp"
+/////////////////////////////////////////////
 
 using namespace std;
 
