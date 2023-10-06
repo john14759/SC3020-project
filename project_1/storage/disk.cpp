@@ -51,6 +51,18 @@ void Disk::deleteRecord(Record* address) {
     delete address;
 }
 
+size_t Disk::getBlockId(Record* record){
+    //this function takes a pointer to a record and returns a size_t value which represents the block ID of the 
+    //record in the disk storage system
+    uchar* recordBytes = reinterpret_cast<uchar*>(record);
+    ptrdiff_t offset = recordBytes - startAddress;
+    size_t blockId = offset / blkSize;
+    return blockId;
+}
 
-
-
+Record* Disk::getRecord(size_t blockIdx, size_t recordIdx){
+    //in this function, we use the block and record index, as well as block size and record size to locate the 
+    //corresponding record
+    size_t offset = blockIdx * blkSize + recordIdx * recordSize;
+    return reinterpret_cast<Record *>(startAddress + offset);
+}

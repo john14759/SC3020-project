@@ -33,8 +33,9 @@ public:
 
     int getmaxRecordsperBlock(){return maxRecordsperBlock;}
 
-     
+    size_t getBlockId(Record *record);
 
+    Record *getRecord(size_t blockIdx, size_t recordIdx);
 };
 
 #endif
