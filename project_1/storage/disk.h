@@ -35,7 +35,7 @@ public:
 
     size_t getBlockId(Record *record);
 
-    Record *getRecord(size_t blockIdx, size_t recordIdx);
+    Record *getRecord(size_t blockIdx, size_t recordIdx); //added
 };
 
 #endif

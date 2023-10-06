@@ -50,7 +50,7 @@ Record* Disk::writeRecord(Record record) {
 void Disk::deleteRecord(Record* address) {
     delete address;
 }
-
+// added
 size_t Disk::getBlockId(Record* record){
     //this function takes a pointer to a record and returns a size_t value which represents the block ID of the 
     //record in the disk storage system
