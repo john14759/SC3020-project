@@ -59,16 +59,18 @@ public:
     int getNumOfNodesAccessed() {
         return numOfNodesAcc;
     }
+
+    void deleteRecordsBelowThreshold(Node * root, float threshold);
 };
-/*
+
 //For the last experiment
-void BPTree::deleteRecordsBelowThreshold(float threshold) {
-    // Start from the root node and traverse the tree
-    deleteRecordsBelowThreshold(root, threshold);
-}
+// void BPTree::deleteRecordsBelowThreshold(Node* root, float threshold) {
+//     // Start from the root node and traverse the tree
+//     deleteRecordsBelowThreshold(root, threshold);
+// }
 
 // Recursive function to delete records below the threshold
-void BpTree::deleteRecordsBelowThreshold(Node* node, float threshold) {
+void BPTree::deleteRecordsBelowThreshold(Node* node, float threshold) {
     if (node == nullptr) {
         return;
     }
@@ -98,5 +100,5 @@ void BpTree::deleteRecordsBelowThreshold(Node* node, float threshold) {
         deleteRecordsBelowThreshold(node->ptrs.back(), threshold);
     }
 }
-*/
+
 #endif

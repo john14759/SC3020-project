@@ -92,24 +92,24 @@ void experiment4(Disk *disk, BPTree *tree) {
         keys = resultNode->keys;
         lowerIdx = lower_bound(keys.begin(), keys.end(), lower) - keys.begin();
         upperIdx = lower_bound(keys.begin(), keys.end(), upper) - keys.begin();
-        cout << "lowerIdx: " << lowerIdx << endl;
-        cout << "upperIdx: " << upperIdx << endl;
-        cout << "Node record size: " << resultNode->records.size() << endl;
-        cout << "Node key size: " << resultNode->keys.size() << endl;
-        cout << "number of duplicate keys: " << resultNode->records[lowerIdx].size() << endl;
-        cout << "value at upper index: " << resultNode->records[upperIdx-1][0]->fg_pct_home << endl;
+        // cout << "lowerIdx: " << lowerIdx << endl;
+        // cout << "upperIdx: " << upperIdx << endl;
+        // cout << "Node record size: " << resultNode->records.size() << endl;
+        // cout << "Node key size: " << resultNode->keys.size() << endl;
+        // cout << "number of duplicate keys: " << resultNode->records[lowerIdx].size() << endl;
+        // cout << "value at upper index: " << resultNode->records[upperIdx-1][0]->fg_pct_home << endl;
         for (int i=lowerIdx; i<=upperIdx-1; i++) {
             for (int j=0; j < resultNode->records[i].size(); j++) {
                   result.push_back(resultNode->records[i][j]);
                 // cout << "value: " << resultNode->records[i][j]->fg_pct_home << endl;
             }
-            cout << "-----------------------------------------------" << i << endl;
+            // cout << "-----------------------------------------------" << i << endl;
         }
         upperIdx = upperIdx == keys.size() ? upperIdx - 1 : upperIdx;
-        cout << "keys.at(upperIdx): " << keys.at(upperIdx) << " " << "upper: " << upper << endl;
+        // cout << "keys.at(upperIdx): " << keys.at(upperIdx) << " " << "upper: " << upper << endl;
         if (keys.at(upperIdx) >= upper) {
             searching = false;
-            cout << "set Searching as false!" << endl;
+            // cout << "set Searching as false!" << endl;
         } else {
             resultNode = resultNode->nextNodePtr;
             if (resultNode == nullptr) {
@@ -117,7 +117,7 @@ void experiment4(Disk *disk, BPTree *tree) {
             }
             leafNodesAccessed++;
         }
-        cout << "testing for segment error" << endl;
+        // cout << "testing for segment error" << endl;
     }
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
     chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
@@ -146,9 +146,9 @@ void experiment4(Disk *disk, BPTree *tree) {
     // currnode now contains the first leaf node
     // now need to iterate through the leaf nodes
     int i=0;
-    if (currNode->isLeaf) {
-        cout << "is leaf node" << endl;
-    }
+    // if (currNode->isLeaf) {
+    //     cout << "is leaf node" << endl;
+    // }
     before = chrono::high_resolution_clock::now();
     while (currNode->nextNodePtr != nullptr) {
         // Check if reached end of the leaf node
@@ -161,10 +161,11 @@ void experiment4(Disk *disk, BPTree *tree) {
         // if (currNode->records[i][0]->fg_pct_home >= upper) {
         //     break;
         // } 
-        cout << "i count: " << i << " keys.size(): " << currNode->keys.size() << endl;
+        // cout << "i count: " << i << " keys.size(): " << currNode->keys.size() << endl;
+        // cout << endl;
         i++;
     }
-    cout << "test" << endl;
+    // cout << "test" << endl;
     after = chrono::high_resolution_clock::now();
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
@@ -190,39 +191,70 @@ void experiment4(Disk *disk, BPTree *tree) {
     cout << "Running time for retrieval by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     cout << endl;
 }
-/*
-void experiment5(Disk *disk, BpTree *tree) {
+
+void experiment5(Disk *disk, BPTree *tree) {
+    cout << "Number of nodes of the B+ Tree before deleting = " << tree->getNumNodes() << endl;
     float below_keyToDelete = 0.35;
+    Node * root = tree->getRoot();
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
-    tree->deleteRecordsBelowThreshold(below_keyToDelete);
+    tree->deleteRecordsBelowThreshold(root, below_keyToDelete);
+    // delete records until reach first record with fg_pct_home > 0.35
+    // get the first leaf node of the tree first
+    // Node * currNode = tree->getRoot();
+    // while (currNode->isLeaf != true) {
+    //     currNode = currNode->ptrs[0];
+    // }
+
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
     chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
-    int numOfBlocksAccessed = 0;
+    int numOfBlocksAccessed = 1;
     Record *r;
     before = chrono::high_resolution_clock::now();
-    for (int i = 0; i < disk->getBlocksUsed(); i++) {
-        numOfBlocksAccessed++;
-        for (int j = 0; j < disk->getRecordsPerBlock(); j++) {
-            r = disk->getRecord(i, j);
-            if (r->fg_pct_home < below_keyToDelete) {
-                continue;
-            }
+    // for (int i = 0; i < disk->getBlocksUsed(); i++) {
+    //     numOfBlocksAccessed++;
+    //     for (int j = 0; j < disk->getRecordsPerBlock(); j++) {
+    //         r = disk->getRecord(i, j);
+    //         if (r->fg_pct_home < below_keyToDelete) {
+    //             continue;
+    //         }
+    //     }
+    // }
+    // get the first leaf node of the tree first
+    Node * currNode = tree->getRoot();
+    while (currNode->isLeaf != true) {
+        currNode = currNode->ptrs[0];
+    }
+    // currNode now contains the first leaf node
+    // Now need to iterate through every leaf node
+    int i=0;
+    while (currNode->nextNodePtr != nullptr) {
+        // Check if reached end of the leaf node
+        if (i == currNode->keys.size()) {
+            currNode = currNode->nextNodePtr;
+            numOfBlocksAccessed += i;
+            i = 0;
         }
+        // Scan until hit first fg_pct_home > upper
+        // if (currNode->records[i][0]->fg_pct_home >= upper) {
+        //     break;
+        // } 
+        // cout << "i count: " << i << " keys.size(): " << currNode->keys.size() << endl;
+        i++;
     }
     after = chrono::high_resolution_clock::now();
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
     cout << "Experiment 5:" << endl;
-    cout << "Number of nodes of the updated B+ Tree = " << tree->getTotalNumOfNodes() << endl;
+    cout << "Number of nodes of the updated B+ Tree = " << tree->getNumNodes() << endl;
     cout << "Number of levels of the updated B+ Tree = " << tree->getDepth() << endl;
     cout << "Content of Root Node of updated B+ Tree: ";
-    tree->displayKeys(tree->getRoot());
+    // tree->displayKeys(tree->getRoot());
     cout << "Running time for deletion process = " << timeTaken.count() << "s" << endl;
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
     cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     cout << endl;
-}*/
+}
 
 int main() {
     Disk* disk = new Disk(500000000, 400, sizeof(Record));
@@ -233,6 +265,7 @@ int main() {
     experiment2(tree);
     cout << "" << endl;
     experiment4(disk, tree);
+    experiment5(disk, tree);
     //cout << tree->getMaxKeys() << endl;
     //cout << tree->getNumNodes() << endl;
     //cout << tree->getDepth() << endl;
