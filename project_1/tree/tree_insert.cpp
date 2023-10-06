@@ -1,7 +1,7 @@
 #include "b_plus_tree.h"
 #include <algorithm>
 // Adding these cause my compiler is shit
-#include "tree_search.cpp"
+// #include "tree_search.cpp"
 /////////////////////////////////////////
 void BPTree::insert(float key, Record *recordPtr) {
     /**
