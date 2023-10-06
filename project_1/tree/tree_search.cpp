@@ -11,14 +11,14 @@ Node *BPTree::searchNode(float key)
 
     Node *curNode = getRoot();
     int idx;
-    //this->numOfNodesAcc++;
+    this->numOfNodesAcc++;
 
     while (!curNode->isLeaf)
     {
         //if current node is a non-leaf node
         idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
         curNode = curNode->ptrs.at(idx);
-        //this->numOfNodesAcc++;
+        this->numOfNodesAcc++;
     }
 
     return curNode;
@@ -33,13 +33,13 @@ std::vector<Record *>* BPTree::searchRecord(float key)
 
     Node *curNode = getRoot();
     int idx;
-    //this->numOfNodesAcc++;
+    this->numOfNodesAcc++;
 
     while (!curNode->isLeaf)
     {
         idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
         curNode = curNode->ptrs.at(idx);
-        //this->numOfNodesAcc++;
+        this->numOfNodesAcc++;
     }
 
     idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
