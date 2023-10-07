@@ -38,7 +38,7 @@ void experiment2(BPTree *tree) {
 
 
 void experiment3(Disk *disk, BPTree *tree) {
-    tree->setNumOfNodesAccessed(0);
+    tree->resetNumNodesAcc();
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     vector<Record *> *result = tree->searchRecord(0.5);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
@@ -72,7 +72,7 @@ void experiment3(Disk *disk, BPTree *tree) {
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
     cout << "Experiment 3:" << endl;
-    cout << "Number of index nodes accessed = " << tree->getNumOfNodesAccessed() << endl;
+    cout << "Number of index nodes accessed = " << tree->getNumNodesAcc() << endl;
     cout << "Number of data blocks accessed = " << resultSet.size() << endl;
     cout << "Average FG_PCT_home = " << total_FG_PCT_home << endl;
     cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;
@@ -91,7 +91,7 @@ void experiment4(Disk *disk, BPTree *tree) {
     float upper = 1.0;
     int lowerIdx, upperIdx, leafNodesAccessed = 0;
     bool searching = true;
-    tree->setNumOfNodesAccessed(0);
+    tree->resetNumNodesAcc();
 
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     Node *resultNode = tree->searchNode(lower);
@@ -190,7 +190,7 @@ void experiment4(Disk *disk, BPTree *tree) {
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
     cout << "Experiment 4:" << endl;
-    cout << "Number of index nodes accessed = " << tree->getNumOfNodesAccessed() + leafNodesAccessed << endl;
+    cout << "Number of index nodes accessed = " << tree->getNumNodesAcc() + leafNodesAccessed << endl;
     cout << "Number of data blocks accessed = " << result.size() << endl;
     cout << "Average FG3_PCT_home = " << total_FG_PCT_home << endl;
     cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;
@@ -268,13 +268,13 @@ int main() {
     BPTree* tree = new BPTree(400);
     //cout << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
     experiment1(disk, tree);
-    cout << "" << endl;
+    cout << endl;
     experiment2(tree);
-    cout << "" << endl;
+    cout << endl;
     experiment3(disk, tree);
-    cout << "" << endl;
+    cout << endl;
     experiment4(disk, tree);
-    cout << "" << endl;
+    cout << endl;
     experiment4(disk, tree);
     experiment5(disk, tree);
     //cout << tree->getMaxKeys() << endl;

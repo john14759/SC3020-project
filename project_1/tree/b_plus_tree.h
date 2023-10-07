@@ -10,8 +10,7 @@ private:
     int numNodes;
     int depth;
     size_t blkSize;
-    int numOfNodesAcc;
-
+    int numNodesAcc; // number of nodes accessed during operations
 
 public:
     BPTree(int blkSize);
@@ -51,12 +50,12 @@ public:
 
     void printNode(Node* node);
 
-    void setNumOfNodesAccessed(int num){
-        this->numOfNodesAcc = num;
+    void resetNumNodesAcc() {
+        this->numNodesAcc = 0;
     };
 
-    int getNumOfNodesAccessed() {
-        return numOfNodesAcc;
+    int getNumNodesAcc() {
+        return numNodesAcc;
     }
     void deleteRecordsBelowThreshold(Node * root, float threshold);
 };
