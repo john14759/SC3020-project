@@ -37,13 +37,13 @@ void BPTree::insert(float key, Record *recordPtr) {
     }
     // For cases 2 to 3
     Node *currNode = this->root; // This node is used for traversing
-    std::vector<Node *> parentNodes(1, nullptr); // Vector used to contain pointers to parent nodes
+    std::vector<Node *> parNodes(1, nullptr); // Vector used to contain pointers to parent nodes
     int idx = 0;
 
     // Find the leaf node where the key should be inserted
     while (!currNode->isLeaf) {
         idx = std::upper_bound(currNode->keys.begin(), currNode->keys.end(), key) - currNode->keys.begin();
-        parentNodes.push_back(currNode);
+        parNodes.push_back(currNode);
         currNode = currNode->ptrs.at(idx);
     }
 
@@ -56,39 +56,39 @@ void BPTree::insert(float key, Record *recordPtr) {
     // Case 3: Leaf node keys == max keys
     if (currNode->keys.size() > this->maxKeys) {
         Node* newNode = this->splitLeafNode(currNode);
-        Node* parentNode = parentNodes.back();
-        parentNodes.pop_back();
+        Node* parNode = parNodes.back();
+        parNodes.pop_back();
         key = newNode->keys.front();
 
-        while (parentNode != nullptr && parentNode->keys.size() == this->maxKeys) {
+        while (parNode != nullptr && parNode->keys.size() == this->maxKeys) {
             // Iteratively check if parent is not NULL and has max children
             // Case 3b: Parent node = max keys, split required
-            idx = std::upper_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
-            parentNode->keys.insert(parentNode->keys.begin() + idx, key);
-            parentNode->ptrs.insert(parentNode->ptrs.begin() + idx + 1, newNode);
+            idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
+            parNode->keys.insert(parNode->keys.begin() + idx, key);
+            parNode->ptrs.insert(parNode->ptrs.begin() + idx + 1, newNode);
 
-            newNode = this->splitInternalNode(parentNode, &key);
-            currNode = parentNode;
+            newNode = this->splitInternalNode(parNode, &key);
+            currNode = parNode;
 
-            parentNode = parentNodes.back();
-            parentNodes.pop_back();
+            parNode = parNodes.back();
+            parNodes.pop_back();
         }  
 
-        if (parentNode == nullptr) {
+        if (parNode == nullptr) {
             // Root has been reached
-            parentNode = new Node(false);
+            parNode = new Node(false);
             this->numNodes++;
-            parentNode->keys.push_back(key);
-            parentNode->ptrs.push_back(currNode);
-            parentNode->ptrs.push_back(newNode);
-            this->root = parentNode;
+            parNode->keys.push_back(key);
+            parNode->ptrs.push_back(currNode);
+            parNode->ptrs.push_back(newNode);
+            this->root = parNode;
             this->depth++;
             return;
         } else {
             // Case 3a: parent node < max keys
-            idx = std::upper_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
-            parentNode->keys.insert(parentNode->keys.begin() + idx, key);
-            parentNode->ptrs.insert(parentNode->ptrs.begin() + idx + 1, newNode);
+            idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
+            parNode->keys.insert(parNode->keys.begin() + idx, key);
+            parNode->ptrs.insert(parNode->ptrs.begin() + idx + 1, newNode);
         }
     }   
 
