@@ -1,11 +1,7 @@
 #include "disk.h"
 
 #include <cstdlib>
-#include <string>
-#include <fstream>
-#include <sstream>
 #include <iostream>
-#include <math.h>
 
 using namespace std;
 
