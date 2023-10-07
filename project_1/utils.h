@@ -29,10 +29,9 @@ namespace utils {
     int readFileIntoDisk(std::string fileName, Disk* disk, BPTree* tree) {
         ifstream inputFile;
         inputFile.open(fileName);
-        if (inputFile.is_open()) {
-            //std::cout << "File is Open" << std::endl;
-        } else {
+        if (!inputFile.is_open()) {
             std::cout << "File failed to Open" << std::endl;
+            return 0;
         }
         string line;
         int numOfRecords = 0;
@@ -52,40 +51,22 @@ namespace utils {
             getline(iss, HOME_TEAM_WINS, '\t');
 
             // Added a condition to check for relevant Records
-            if (PTS_home == "") {
-                continue;
-            }
-
+            if (PTS_home == "") 
+                continue;          
             Record record = {
-                usint(dateStringToDaysSinceEpoch(GAME_DATE_EST)),
-                stoul(TEAM_ID_home),
-                static_cast<char>(stoi(PTS_home)),
                 stof(FG_PCT_home),
                 stof(FT_PCT_home),
                 stof(FG3_PCT_home),
+                stoul(TEAM_ID_home),
+                usint(dateStringToDaysSinceEpoch(GAME_DATE_EST)),
+                static_cast<char>(stoi(PTS_home)),
                 static_cast<char>(stoi(AST_home)),
                 static_cast<char>(stoi(REB_home)),
                 HOME_TEAM_WINS == "1" ? true : false
             };
-
-            // record.fg3_pct_home == stof(FG3_PCT_home)
-
             Record* recordPtr = (*disk).writeRecord(record);
             tree->insert(record.fg3_pct_home, recordPtr);
-            // cout << record.game_date_est << " ";
-            // cout << record.team_id_home << " ";
-            // cout << int(record.pts_home) << " ";
-            // cout << record.fg_pct_home << " ";
-            // cout << record.ft_pct_home << " ";
-            // cout << record.fg3_pct_home << " ";
-            // cout << int(record.ast_home) << " ";
-            // cout << int(record.reb_home) << " ";
-            // cout << record.home_team_wins << endl;
-            // cout << endl;
-            numOfRecords++;
-            // if (numOfRecords == 26000)
-            //     break;
-           
+            numOfRecords++; 
         }
         inputFile.close();
 

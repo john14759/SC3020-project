@@ -20,7 +20,6 @@ void experiment1(Disk *disk, BPTree *tree){
     cout << "Number of blocks used: " << disk->getNumBlks() << endl;
 }
 
-
 void experiment2(BPTree *tree) {
     cout << "Experiment 2:" << endl;
     cout << "Printing B+ tree out:" << endl;
@@ -35,7 +34,6 @@ void experiment2(BPTree *tree) {
     tree->printNode(tree->getRoot());
     cout << endl;
 }
-
 
 void experiment3(Disk *disk, BPTree *tree) {
     tree->resetNumNodesAcc();
