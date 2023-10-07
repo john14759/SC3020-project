@@ -14,7 +14,6 @@ private:
     size_t recordSize;
     uint numUsedBlks;
     size_t curBlkUsedMem; // used memory in the current block
-    size_t maxRecordsperBlock;
 
     bool allocateBlock();
 
@@ -29,13 +28,13 @@ public:
 
     int getNumBlks() {return numUsedBlks;}
 
-    int getBlockSize(){return blkSize;} 
+    int getBlockSize() {return blkSize;} 
 
-    int getmaxRecordsperBlock(){return maxRecordsperBlock;}
+    int getMaxRecordsPerBlock() {return floor(blkSize / recordSize);}
 
-    size_t getBlockId(Record *record);
+    int getBlockId(Record *record);
 
-    Record *getRecord(size_t blockIdx, size_t recordIdx); //added
+    Record *getRecord(int blockIdx, int recordIdx); 
 };
 
 #endif

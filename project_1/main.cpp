@@ -16,7 +16,7 @@ void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     cout << "Number of records: " << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
-    cout << "Number of records stored in a block: " << disk->getmaxRecordsperBlock() << endl;
+    cout << "Number of records stored in a block: " << disk->getMaxRecordsPerBlock() << endl;
     cout << "Number of blocks used: " << disk->getNumBlks() << endl;
 }
 
@@ -61,7 +61,7 @@ void experiment3(Disk *disk, BPTree *tree) {
     for (int i = 0; i < disk->getNumBlks(); i++) {
         numOfBlocksAccessed++;
         //iterates through each record on the block
-        for (int j = 0; j < disk->getmaxRecordsperBlock(); j++) {
+        for (int j = 0; j < disk->getMaxRecordsPerBlock(); j++) {
             r = disk->getRecord(i, j);
             if (r->fg_pct_home == 0.5) {
                 continue;
@@ -179,7 +179,7 @@ void experiment4(Disk *disk, BPTree *tree) {
     before = chrono::high_resolution_clock::now();
     for (int i = 0; i < disk->getNumBlks(); i++) {
         numOfBlocksAccessed++;
-        for (int j = 0; j < disk->getmaxRecordsperBlock(); j++) {
+        for (int j = 0; j < disk->getMaxRecordsPerBlock(); j++) {
             r = disk->getRecord(i, j);
             if (r->fg_pct_home >= lower && r->fg_pct_home <= upper) {
                 continue;

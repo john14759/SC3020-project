@@ -28,11 +28,7 @@ std::vector<Record *>* BPTree::searchRecord(float key) {
         this->numNodesAcc++;
     }
     idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
-    if (idx < curNode->keys.size() && curNode->keys.at(idx) == key) {
+    if (idx < curNode->keys.size() && curNode->keys.at(idx) == key) 
         return &(curNode->records.at(idx));
-        /*std::vector<Record*>* result = new std::vector<Record*>;
-        result->push_back(curNode->records.at(idx));
-        return result;*/
-    }
     return nullptr;
 }

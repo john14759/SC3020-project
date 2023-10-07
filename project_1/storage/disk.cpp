@@ -16,8 +16,6 @@ Disk::Disk(size_t size, size_t blkSize, size_t recordSize) {
     this->recordSize = recordSize;
     numUsedBlks = 0;
     curBlkUsedMem = 0;
-
-    maxRecordsperBlock = floor(blkSize / recordSize);
 }
 
 Disk::~Disk() {
@@ -50,8 +48,8 @@ Record* Disk::writeRecord(Record record) {
 void Disk::deleteRecord(Record* address) {
     delete address;
 }
-// added
-size_t Disk::getBlockId(Record* record){
+
+int Disk::getBlockId(Record* record){
     //this function takes a pointer to a record and returns a size_t value which represents the block ID of the 
     //record in the disk storage system
     uchar* recordBytes = reinterpret_cast<uchar*>(record);
@@ -60,7 +58,7 @@ size_t Disk::getBlockId(Record* record){
     return blockId;
 }
 
-Record* Disk::getRecord(size_t blockIdx, size_t recordIdx){
+Record* Disk::getRecord(int blockIdx, int recordIdx){
     //in this function, we use the block and record index, as well as block size and record size to locate the 
     //corresponding record
     size_t offset = blockIdx * blkSize + recordIdx * recordSize;

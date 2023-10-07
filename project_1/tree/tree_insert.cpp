@@ -4,29 +4,15 @@
 // #include "tree_search.cpp"
 /////////////////////////////////////////
 void BPTree::insert(float key, Record *recordPtr) {
-    /**
-     * Case 0: Duplicate insertion
-     * Case 1: Tree not instantiated
-     * Case 2: Leaf node keys < max keys
-     * Case 3: Leaf node keys == max keys
-     * Case 3a: Parent node < max keys
-     * Case 3b: Parent node = max keys, split required
-     *
-     */
-
-    // Case 0: Duplicate insertion
+    // duplicate key
     std::vector<Record *> *records = this->searchRecord(key);
     if (records != nullptr) {
         records->push_back(recordPtr);
         return;
     }
-    // Case 1: B+ tree not instantiated
+
+    // tree not instantiated
     if (this->root == nullptr) {
-            // Node* root;
-            // int maxKeys;
-            // int numNodes;
-            // int depth;
-            // size_t blkSize;
         this->root = new Node(true);
         this->numNodes++;
         this->depth++;
@@ -35,25 +21,24 @@ void BPTree::insert(float key, Record *recordPtr) {
         this->root->nextNodePtr = nullptr;
         return;
     }
-    // For cases 2 to 3
-    Node *currNode = this->root; // This node is used for traversing
-    std::vector<Node *> parNodes(1, nullptr); // Vector used to contain pointers to parent nodes
+
+    Node *currNode = this->root; 
+    std::vector<Node *> parNodes(1, nullptr); 
     int idx = 0;
 
-    // Find the leaf node where the key should be inserted
+    // find leaf node to insert key
     while (!currNode->isLeaf) {
         idx = std::upper_bound(currNode->keys.begin(), currNode->keys.end(), key) - currNode->keys.begin();
         parNodes.push_back(currNode);
         currNode = currNode->ptrs.at(idx);
     }
 
-    // Insert the key and record into the leaf node at the sorted index
-    // Case 2: Leaf node keys < max keys
+    // insert key and record
     idx = std::upper_bound(currNode->keys.begin(), currNode->keys.end(), key) - currNode->keys.begin();
     currNode->keys.insert(currNode->keys.begin() + idx, key);
     currNode->records.insert(currNode->records.begin() + idx, std::vector<Record*>(1, recordPtr));
 
-    // Case 3: Leaf node keys == max keys
+    // leaf node keys > max keys, split required
     if (currNode->keys.size() > this->maxKeys) {
         Node* newNode = this->splitLeafNode(currNode);
         Node* parNode = parNodes.back();
@@ -61,8 +46,7 @@ void BPTree::insert(float key, Record *recordPtr) {
         key = newNode->keys.front();
 
         while (parNode != nullptr && parNode->keys.size() == this->maxKeys) {
-            // Iteratively check if parent is not NULL and has max children
-            // Case 3b: Parent node = max keys, split required
+            // keys in parent node > max keys, split required
             idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
             parNode->keys.insert(parNode->keys.begin() + idx, key);
             parNode->ptrs.insert(parNode->ptrs.begin() + idx + 1, newNode);
@@ -75,7 +59,6 @@ void BPTree::insert(float key, Record *recordPtr) {
         }  
 
         if (parNode == nullptr) {
-            // Root has been reached
             parNode = new Node(false);
             this->numNodes++;
             parNode->keys.push_back(key);
@@ -84,14 +67,14 @@ void BPTree::insert(float key, Record *recordPtr) {
             this->root = parNode;
             this->depth++;
             return;
-        } else {
-            // Case 3a: parent node < max keys
+        } 
+        else {
+            // keys in parent node < max keys, no split required
             idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
             parNode->keys.insert(parNode->keys.begin() + idx, key);
             parNode->ptrs.insert(parNode->ptrs.begin() + idx + 1, newNode);
         }
     }   
-
 }
 
 Node* BPTree::splitLeafNode(Node* currNode) {
