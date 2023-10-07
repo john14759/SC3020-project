@@ -1,6 +1,7 @@
 #include "b_plus_tree.h"
 #include <algorithm>
 #include <iostream>
+#include <stack>
 
 void BPTree::deleteKey(float key)
 {
@@ -311,34 +312,53 @@ void BPTree::updateParentKeys(Node *currNode, Node *parentNode, int parentIndex,
     }
 }
 
-// Recursive function to delete records below the threshold
-void BPTree::deleteRecordsBelowThreshold(Node* node, float threshold) {
-    if (node == nullptr) {
+void BPTree::deleteRecordsBelowThreshold(Node* root, float threshold) {
+    if (root == nullptr) {
         return;
     }
 
-    if (node->isLeaf) {
-        // Delete records that meet the criteria
-        for (int i = 0; i < node->keys.size(); i++) {
-            if (node->keys[i] < threshold) {
-                // Remove the record from this leaf node
-                node->keys.erase(node->keys.begin() + i);
-                node->records.erase(node->records.begin() + i);
-                i--;  // Adjust the index after erasing
-            }
-        }
-    } else {
-        // Traverse internal nodes and recursively delete records
-        for (int i = 0; i < node->keys.size(); i++) {
-            // Check if the threshold is less than the current key
-            if (threshold < node->keys[i]) {
-                // Recursively delete records in the child node
-                deleteRecordsBelowThreshold(node->ptrs[i], threshold);
-                return; // Exit the loop since B+ trees are sorted
-            }
-        }
+    std::stack<Node*> nodeStack;
+    nodeStack.push(root);
 
-        // If the threshold is greater than or equal to the last key, traverse the rightmost child
-        deleteRecordsBelowThreshold(node->ptrs.back(), threshold);
+    while (!nodeStack.empty()) {
+        Node* currentNode = nodeStack.top();
+        nodeStack.pop();
+
+        if (currentNode->isLeaf) {
+            // Create vectors to store the deleted records
+            std::vector<float> deletedKeys;
+            std::vector<std::vector<Record*>> deletedRecords;
+
+            // Delete records that meet the criteria and track them
+            for (int i = 0; i < currentNode->keys.size(); i++) {
+                if (currentNode->keys[i] < threshold) {
+                    deletedKeys.push_back(currentNode->keys[i]);
+                    deletedRecords.push_back(currentNode->records[i]);
+
+                    // Remove the record from this leaf node
+                    currentNode->keys.erase(currentNode->keys.begin() + i);
+                    currentNode->records.erase(currentNode->records.begin() + i);
+                    i--;  // Adjust the index after erasing
+                }
+            }
+
+            /*// Print the deleted records
+            for (size_t i = 0; i < deletedKeys.size(); i++) {
+                std::cout << "Deleted Record with Key for B+ tree: " << deletedKeys[i] << std::endl;
+            }*/
+        } else {
+            // Traverse internal nodes
+            for (int i = 0; i < currentNode->keys.size(); i++) {
+                // Check if the threshold is less than the current key
+                if (threshold < currentNode->keys[i]) {
+                    // Push the child node onto the stack for further processing
+                    nodeStack.push(currentNode->ptrs[i]);
+                }
+            }
+
+            // Push the rightmost child onto the stack for further processing
+            nodeStack.push(currentNode->ptrs.back());
+        }
     }
 }
+
