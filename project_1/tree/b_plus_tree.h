@@ -50,11 +50,11 @@ public:
     void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
 
     void printNode(Node* node);
-
+    //Set
     void setNumOfNodesAccessed(int num){
         this->numOfNodesAcc = num;
     };
-
+    //Get
     int getNumOfNodesAccessed() {
         return numOfNodesAcc;
     }

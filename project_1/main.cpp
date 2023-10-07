@@ -142,51 +142,6 @@ void experiment5(Disk *disk, BPTree *tree) {
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
     chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
-    /*
-    int numOfBlocksAccessed = 1;
-    Record *r;
-    before = chrono::high_resolution_clock::now();
-    Node * currNode = tree->getRoot();
-
-    // Create vectors to store deleted keys and records
-    std::vector<float> deletedKeys;
-    std::vector<std::vector<Record*>> deletedRecords;
-
-    while (currNode->isLeaf != true) {
-        currNode = currNode->ptrs[0];
-    }
-    // currNode now contains the first leaf node
-    int i=0;
-    while (currNode->nextNodePtr != nullptr) {
-        // Check if reached end of the leaf node
-        if (i == currNode->keys.size()) {
-            currNode = currNode->nextNodePtr;
-            numOfBlocksAccessed += i;
-            i = 0;
-        }
-        
-        // Check if the key is below the threshold
-        if (currNode != nullptr && currNode->keys[i] <= 0.35) {
-            // Store the deleted key and record pointer
-            deletedKeys.push_back(currNode->keys[i]);
-            deletedRecords.push_back(currNode->records[i]);
-        
-            // Remove the record from this leaf node
-            currNode->keys.erase(currNode->keys.begin() + i);
-            currNode->records.erase(currNode->records.begin() + i);
-        } else {
-            i++;
-        }
-    }
-    after = chrono::high_resolution_clock::now();
-    chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
-
-    // Print the deleted keys and records
-    for (size_t j = 0; j < deletedKeys.size(); j++) {
-        std::cout << "Deleted Record with Key for brute force method: " << deletedKeys[j] << std::endl;
-    }
-    */
-
     cout << "Experiment 5:" << endl;
     cout << "Number of nodes of the updated B+ Tree = " << tree->getNumNodes() << endl;
     cout << "Number of levels of the updated B+ Tree = " << tree->getDepth() << endl;
@@ -198,92 +153,127 @@ void experiment5(Disk *disk, BPTree *tree) {
 
 // Function to delete movies with "FG_PCT_home" below 0.35 inclusively for experiment 5
 void deleteMoviesWithLowFGPCT(Disk* disk) {
+    // Get the number of blocks in the disk
     size_t numBlocks = disk->getNumBlks();
+    // Get the maximum number of records per block
     size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
+    // Get the size of a record in bytes
     size_t recordSize = sizeof(Record);
+    // Initialize the count of blocks accessed to 0
     int numOfBlocksAccessed = 0;
+    // Initialize the count of records deleted to 0
     int numofRecordsDeleted = 0;
-
+    // Start the timer
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    // Iterate over each block in the disk
     for (size_t blockIdx = 0; blockIdx < numBlocks; ++blockIdx) {
+        // Increment the count of blocks accessed
         numOfBlocksAccessed++;
+        // Iterate over each record in the block
         for (size_t recordIdx = 0; recordIdx < maxRecordsPerBlock; ++recordIdx) {
+            // Get a pointer to the current record
             Record* record = disk->getRecord(blockIdx, recordIdx);
             
+            // Check if the "FG_PCT_home" of the record is below or equal to 0.35
             if (record->fg_pct_home <= 0.35) {
-                //cout << "Deleting record with FG_PCT_home = " << record->fg_pct_home << endl;
+                // Increment the count of records deleted
                 numofRecordsDeleted++;
+                // Continue to the next record
                 continue;
             }
         }
     }
-
+    // Stop the timer
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+    // Calculate the time taken for the deletion process
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    // Print the number of data blocks accessed
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
-    //cout << "Deleted records= " << numofRecordsDeleted << endl;
+    // Print the running time for the deletion process
     cout << "Running time for deletion by brute force method = " << bruteTimeTaken.count() << "s" << endl;
-    
 }
 
 // Function to delete movies with "FG_PCT_home" 0.6 to 1 inclusively for experiment 4
 void accessMoviesWithRange(Disk* disk) {
+    // Get the number of blocks in the disk
     size_t numBlocks = disk->getNumBlks();
+    // Get the maximum number of records per block
     size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
+    // Get the size of a single record
     size_t recordSize = sizeof(Record);
+    // Initialize variables to keep track of the number of blocks and records accessed
     int numOfBlocksAccessed = 0;
     int numofRecordsAccessed = 0;
-
+    // Start the timer
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    
+    // Loop through each block in the disk
     for (size_t blockIdx = 0; blockIdx < numBlocks; ++blockIdx) {
+        // Increment the number of blocks accessed
         numOfBlocksAccessed++;
+        
+        // Loop through each record in the block
         for (size_t recordIdx = 0; recordIdx < maxRecordsPerBlock; ++recordIdx) {
+            // Get the current record
             Record* record = disk->getRecord(blockIdx, recordIdx);
             
-            if (0.6 <= record->fg_pct_home <= 1) {
-                //cout << "Accessing records with FG_PCT_home = " << record->fg_pct_home << endl;
+            // Check if the "FG_PCT_home" value of the record is between 0.6 and 1 (inclusive)
+            if (0.6 <= record->fg_pct_home && record->fg_pct_home <= 1) {
+                // Increment the number of records accessed
                 numofRecordsAccessed++;
+                // Continue to the next record
                 continue;
             }
         }
     }
-
+    // Stop the timer
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+    // Calculate the time taken by the brute force method
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
-    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
-    //cout << "Accessed records= " << numofRecordsAccessed << endl;
-    cout << "Running time for accessed by brute force method = " << bruteTimeTaken.count() << "s" << endl;
     
+    // Print the number of data blocks accessed
+    cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
+    // Print the running time of the brute force method
+    cout << "Running time for accessed by brute force method = " << bruteTimeTaken.count() << "s" << endl;
 }
 
 // Function to delete movies with "FG_PCT_home" equal to 0.5 for experiment 3
 void accessMoviesWithEqual(Disk* disk) {
+    // Get the number of blocks, maximum records per block, and record size from the disk
     size_t numBlocks = disk->getNumBlks();
     size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
     size_t recordSize = sizeof(Record);
+    // Variables to keep track of the number of blocks and records accessed
     int numOfBlocksAccessed = 0;
     int numofRecordsAccessed = 0;
-
+    // Start measuring the execution time
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
+    // Loop through each block
     for (size_t blockIdx = 0; blockIdx < numBlocks; ++blockIdx) {
+        // Increment the number of blocks accessed
         numOfBlocksAccessed++;
+        // Loop through each record in the block
         for (size_t recordIdx = 0; recordIdx < maxRecordsPerBlock; ++recordIdx) {
+            // Get the record from the disk
             Record* record = disk->getRecord(blockIdx, recordIdx);
             
+            // Check if the "FG_PCT_home" value of the record is equal to 0.5
             if (record->fg_pct_home = 0.5) {
-                //cout << "Accessing records with FG_PCT_home = " << record->fg_pct_home << endl;
+                // Increment the number of records accessed
                 numofRecordsAccessed++;
+                // Continue to the next record
                 continue;
             }
         }
     }
-
+    // Stop measuring the execution time
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
+    // Calculate the time taken for the brute force method
     chrono::duration<double> bruteTimeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
+    // Print the number of data blocks accessed by the brute force method
     cout << "Number of data blocks accessed by brute force method = " << numOfBlocksAccessed << endl;
-    //cout << "Accessed records= " << numofRecordsAccessed << endl;
+    // Print the running time for the brute force method
     cout << "Running time for accessed by brute force method = " << bruteTimeTaken.count() << "s" << endl;
-    
 }
 
 
@@ -291,6 +281,7 @@ int main() {
     Disk* disk = new Disk(500000000, 400, sizeof(Record));
     BPTree* tree = new BPTree(400);
     utils::readFileIntoDisk("games.txt", disk, tree);
+    cout << endl;
     experiment1(disk, tree);
     cout << endl;
     experiment2(tree);

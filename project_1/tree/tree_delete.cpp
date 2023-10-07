@@ -5,12 +5,13 @@
 
 void BPTree::deleteKey(float key)
 {
+    // Check if the tree is empty
     if (this->root == nullptr)
     {
-        std::cout << "Empty tree" << std::endl;
+        std::cout << "Tree is empty" << std::endl;
         return;
     }
-
+    // Search for the key in the tree
     std::vector<Record *> *r = this->searchRecord(key);
     if (r == nullptr)
     {
@@ -150,38 +151,41 @@ void BPTree::deleteKey(float key)
     }
 }
 
-Node *BPTree::findParentNode(Node *parentNode, Node *childNode)
-{
+// This function finds the parent node of a given child node in a B+ tree.
+Node* BPTree::findParentNode(Node *parentNode, Node *childNode) {
     int key, index;
     Node *currNode = childNode;
-    while (!currNode->isLeaf)
-    {
+    // Traverse from the child node to the leaf node
+    while (!currNode->isLeaf) {
         currNode = currNode->ptrs.front();
     }
+    // Get the key from the leaf node
     key = currNode->keys.front();
-
-    while (!parentNode->isLeaf)
-    {
+    // Traverse from the parent node to the leaf node
+    while (!parentNode->isLeaf) {
+        // Find the index where the key should be inserted in the parent node
         index = std::upper_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
-        if (parentNode->ptrs.at(index) == childNode)
-        {
+        // Check if the child node is found at the current index in the parent node
+        if (parentNode->ptrs.at(index) == childNode) {
             return parentNode;
-        }
-        else
-        {
+        } else {
+            // Update the parent node to the next level
             parentNode = parentNode->ptrs.at(index);
         }
     }
-
+    // If the parent node is not found, return nullptr
     return nullptr;
 }
 
 void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
-{
+{   
+    // Check if the parent node is the root
     if (parentNode == this->root)
     {
+        // Check if the parent node has only one key
         if (parentNode->keys.size() == 1)
-        {
+        {   
+            // Set the root to the appropriate child node
             if (parentNode->ptrs.at(0) == nodeToDelete)
             {
                 this->setRoot(parentNode->ptrs.at(1));
@@ -194,7 +198,7 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
         }
     }
 
-    // Delete the nodeToDelete
+    // Delete the key and pointer from the parent node
     int index = std::lower_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
     parentNode->keys.erase(parentNode->keys.begin() + index);
     for (index = 0; index < parentNode->ptrs.size(); index++)
@@ -207,7 +211,7 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
     parentNode->ptrs.erase(parentNode->ptrs.begin() + index);
     this->numNodes--;
 
-    // Return if the parentNode has more than the min number of keys
+    // Return if the parent node has more than or equal to the minimum number of keys
     if (parentNode->keys.size() >= this->maxKeys / 2)
     {
         return;
@@ -226,8 +230,10 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
     if (index > 0)
     {
         leftNeighbour = parentNode->ptrs.at(index - 1);
+        // Check if the left neighbor has more than the minimum number of keys
         if (leftNeighbour->keys.size() > this->maxKeys / 2)
         {
+             // Update the keys and pointers in the parent node and left neighbor
             parentNode->keys.insert(parentNode->keys.begin(), ancestorNode->keys.at(index - 1));
             ancestorNode->keys[index - 1] = leftNeighbour->keys.back();
 
@@ -242,8 +248,10 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
     {
         rightNeighbour = ancestorNode->ptrs.at(index + 1);
 
+        // Check if the right neighbor has more than the minimum number of keys
         if (rightNeighbour->keys.size() > this->maxKeys / 2)
         {
+            // Update the keys and pointers in the parent node and right neighbor
             parentNode->keys.push_back(ancestorNode->keys.at(index));
             parentNode->keys[index] = rightNeighbour->keys.front();
             rightNeighbour->keys.erase(rightNeighbour->keys.begin());
@@ -254,25 +262,31 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete)
             return;
         }
     }
-
+    // Merge with the left neighbor if it exists
     if (index > 0)
     {
+        // Move all keys and pointers from the parent node to the left neighbor
         leftNeighbour->keys.push_back(ancestorNode->keys.at(index - 1));
 
         while (parentNode->keys.size() != 0)
         {
             leftNeighbour->keys.push_back(parentNode->keys.front());
         }
-
+        // Move all pointers from the parent node to the left neighbor
         while (parentNode->ptrs.size() != 0)
         {
+            // Add the first pointer of the parent node to the ptrs vector of the left neighbor
             leftNeighbour->ptrs.push_back(parentNode->ptrs.front());
         }
-
+        // Remove the key at index - 1 from the ancestor node
         this->removeInternal(ancestorNode->keys.at(index - 1), ancestorNode, parentNode);
     }
     else if (index < ancestorNode->ptrs.size() - 1)
     {
+    // Merge with the right neighbor if it exists
+
+    // Add the key from the ancestor node at index to the keys vector of the parent node
+    
         parentNode->keys.push_back(ancestorNode->keys.at(index));
 
         while (rightNeighbour->keys.size() != 0)
@@ -316,36 +330,30 @@ void BPTree::deleteRecordsBelowThreshold(Node* root, float threshold) {
     if (root == nullptr) {
         return;
     }
-
     std::stack<Node*> nodeStack;
     nodeStack.push(root);
-
     while (!nodeStack.empty()) {
         Node* currentNode = nodeStack.top();
         nodeStack.pop();
-
         if (currentNode->isLeaf) {
             // Create vectors to store the deleted records
             std::vector<float> deletedKeys;
             std::vector<std::vector<Record*>> deletedRecords;
-
             // Delete records that meet the criteria and track them
             for (int i = 0; i < currentNode->keys.size(); i++) {
                 if (currentNode->keys[i] < threshold) {
                     deletedKeys.push_back(currentNode->keys[i]);
                     deletedRecords.push_back(currentNode->records[i]);
-
                     // Remove the record from this leaf node
                     currentNode->keys.erase(currentNode->keys.begin() + i);
                     currentNode->records.erase(currentNode->records.begin() + i);
                     i--;  // Adjust the index after erasing
                 }
             }
-
-            /*// Print the deleted records
-            for (size_t i = 0; i < deletedKeys.size(); i++) {
-                std::cout << "Deleted Record with Key for B+ tree: " << deletedKeys[i] << std::endl;
-            }*/
+            // Print the deleted records
+            // for (size_t i = 0; i < deletedKeys.size(); i++) {
+            //     std::cout << "Deleted Record with Key for B+ tree: " << deletedKeys[i] << std::endl;
+            // }
         } else {
             // Traverse internal nodes
             for (int i = 0; i < currentNode->keys.size(); i++) {
@@ -355,7 +363,6 @@ void BPTree::deleteRecordsBelowThreshold(Node* root, float threshold) {
                     nodeStack.push(currentNode->ptrs[i]);
                 }
             }
-
             // Push the rightmost child onto the stack for further processing
             nodeStack.push(currentNode->ptrs.back());
         }
