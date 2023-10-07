@@ -4,6 +4,7 @@
 #include "../structs.h"
 
 #include <string>
+#include <math.h>
 #include <vector>
  
 class Disk {
