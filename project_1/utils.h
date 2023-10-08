@@ -33,7 +33,7 @@ namespace utils {
         ifstream inputFile;
         inputFile.open(fileName);
         if (!inputFile.is_open()) {
-            std::cout << "File failed to Open" << std::endl;
+            cout << "File failed to Open" << endl;
             return 0;
         }
         string line;
