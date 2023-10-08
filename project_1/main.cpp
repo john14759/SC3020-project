@@ -13,10 +13,9 @@ void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     cout << "Number of records: " << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
-    cout << "Number of records stored in a block: " << disk->getmaxRecordsperBlock() << endl;
+    cout << "Number of records stored in a block: " << disk->getMaxRecordsperBlock() << endl;
     cout << "Number of blocks used to store data in the disk: " << disk->getNumBlks() << endl;
 }
-
 
 void experiment2(BPTree *tree) {
     cout << "Experiment 2:" << endl;
@@ -31,9 +30,8 @@ void experiment2(BPTree *tree) {
     cout << endl;
 }
 
-
 void experiment3(Disk *disk, BPTree *tree) {
-    tree->setNumOfNodesAccessed(0);
+    tree->resetNumNodesAcc();
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     vector<Record *> *result = tree->searchRecord(0.5);
     chrono::high_resolution_clock::time_point after = chrono::high_resolution_clock::now();
@@ -47,9 +45,8 @@ void experiment3(Disk *disk, BPTree *tree) {
         total_FG_PCT_home += r->fg3_pct_home;
     }
     total_FG_PCT_home /= result->size();
-
     cout << "Experiment 3:" << endl;
-    cout << "Number of index nodes accessed = " << tree->getNumOfNodesAccessed() << endl;
+    cout << "Number of index nodes accessed = " << tree->getNumNodesAcc() << endl;
     cout << "Number of data blocks accessed = " << resultSet.size() << endl;
     cout << "Average FG_PCT_home = " << total_FG_PCT_home << endl;
     cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;
@@ -64,7 +61,7 @@ void experiment4(Disk *disk, BPTree *tree) {
     float upper = 1.0;
     int lowerIdx, upperIdx, leafNodesAccessed = 0;
     bool searching = true;
-    tree->setNumOfNodesAccessed(0);
+    tree->resetNumNodesAcc();
 
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     Node *resultNode = tree->searchNode(lower);
@@ -116,7 +113,7 @@ void experiment4(Disk *disk, BPTree *tree) {
     total_FG_PCT_home /= result.size();
 
     cout << "Experiment 4:" << endl;
-    cout << "Number of index nodes accessed = " << tree->getNumOfNodesAccessed() + leafNodesAccessed << endl;
+    cout << "Number of index nodes accessed = " << tree->getNumNodesAcc() + leafNodesAccessed << endl;
     cout << "Number of data blocks accessed = " << result.size() << endl;
     cout << "Average FG3_PCT_home = " << total_FG_PCT_home << endl;
     cout << "Running time for retrieval process = " << timeTaken.count() << "s" << endl;

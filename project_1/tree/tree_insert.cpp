@@ -58,10 +58,10 @@ void BPTree::insert(float key, Record *recordPtr) {
             // If the root node has been reached, create a new root node
             parentNode = new Node(false);
             this->numNodes++;
-            parentNode->keys.push_back(key);
-            parentNode->ptrs.push_back(currNode);
-            parentNode->ptrs.push_back(newNode);
-            this->root = parentNode;
+            parNode->keys.push_back(key);
+            parNode->ptrs.push_back(currNode);
+            parNode->ptrs.push_back(newNode);
+            this->root = parNode;
             this->depth++;
             return;
         } else {
@@ -71,7 +71,6 @@ void BPTree::insert(float key, Record *recordPtr) {
             parentNode->ptrs.insert(parentNode->ptrs.begin() + index + 1, newNode);
         }
     }   
-
 }
 
 // This function splits a leaf node of a B+ tree into two nodes

@@ -34,41 +34,45 @@ namespace utils {
     }
 
     int readFileIntoDisk(std::string fileName, Disk* disk, BPTree* tree) {
-    ifstream inputFile;
-    inputFile.open(fileName); // Open the input file
-    
-    if (inputFile.is_open()) {
-        // File is opened successfully
-    } else {
-        std::cout << "File failed to Open" << std::endl;
-    }
-    
-    string line;
-    int numOfRecords = 0;
-    getline(inputFile, line); // Read and discard the first line
-    
-    // Read each line of the file
-    while (getline(inputFile, line)) {
-        istringstream iss(line); // Create a string stream to parse the line
-        
-        // Variables to store the values from each field in the line
-        string GAME_DATE_EST, TEAM_ID_home, PTS_home, FG_PCT_home, FT_PCT_home;
-        string FG3_PCT_home, AST_home, REB_home, HOME_TEAM_WINS;
-        
-        // Extract the values from each field in the line
-        getline(iss, GAME_DATE_EST, '\t');
-        getline(iss, TEAM_ID_home, '\t');
-        getline(iss, PTS_home, '\t');
-        getline(iss, FG_PCT_home, '\t');
-        getline(iss, FT_PCT_home, '\t');
-        getline(iss, FG3_PCT_home, '\t');
-        getline(iss, AST_home, '\t');
-        getline(iss, REB_home, '\t');
-        getline(iss, HOME_TEAM_WINS, '\t');
-        
-        // Check if the record is relevant (PTS_home field should not be empty)
-        if (PTS_home == "") {
-            continue; // Skip this record and move to the next line
+        ifstream inputFile;
+        inputFile.open(fileName);
+        if (!inputFile.is_open()) {
+            std::cout << "File failed to Open" << std::endl;
+            return 0;
+        }
+        string line;
+        int numOfRecords = 0;
+        getline(inputFile, line);
+        while (getline(inputFile, line)) {
+            istringstream iss(line);
+            string GAME_DATE_EST, TEAM_ID_home, PTS_home, FG_PCT_home, FT_PCT_home, FG3_PCT_home, AST_home, REB_home, HOME_TEAM_WINS;
+            getline(iss, GAME_DATE_EST, '\t');
+            getline(iss, TEAM_ID_home, '\t');
+            getline(iss, PTS_home, '\t');
+            getline(iss, FG_PCT_home, '\t');
+            getline(iss, FT_PCT_home, '\t');
+            getline(iss, FG3_PCT_home, '\t');
+            getline(iss, AST_home, '\t');
+            getline(iss, REB_home, '\t');
+            getline(iss, HOME_TEAM_WINS, '\t');
+
+            // Check if the record is relevant (PTS_home field should not be empty)
+            if (PTS_home == "") 
+                continue;          
+            Record record = {
+                stof(FG_PCT_home),
+                stof(FT_PCT_home),
+                stof(FG3_PCT_home),
+                stoul(TEAM_ID_home),
+                usint(dateStringToDaysSinceEpoch(GAME_DATE_EST)),
+                static_cast<char>(stoi(PTS_home)),
+                static_cast<char>(stoi(AST_home)),
+                static_cast<char>(stoi(REB_home)),
+                HOME_TEAM_WINS == "1" ? true : false
+            };
+            Record* recordPtr = (*disk).writeRecord(record);
+            tree->insert(record.fg3_pct_home, recordPtr);
+            numOfRecords++; 
         }
         
         // Create a new Record object with the extracted values

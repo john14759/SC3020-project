@@ -9,7 +9,7 @@ Node* BPTree::searchNode(float key) {
     if (curNode == nullptr)
         return nullptr;
     // Increment the count of nodes accessed
-    this->numOfNodesAcc++;
+    this->numNodesAcc++;
     int idx;
     // Continue traversing the tree until a leaf node is reached
     while (!curNode->isLeaf) {
@@ -18,7 +18,7 @@ Node* BPTree::searchNode(float key) {
         // Move to the child node at the found index
         curNode = curNode->ptrs.at(idx);
         // Increment the count of nodes accessed
-        this->numOfNodesAcc++;
+        this->numNodesAcc++;
     }
     // Return the leaf node containing the key
     return curNode;
@@ -31,10 +31,7 @@ std::vector<Record*>* BPTree::searchRecord(float key) {
     // If there is no root node, return nullptr
     if (curNode == nullptr)
         return nullptr;
-    
-    // Increment the number of nodes accessed
-    this->numOfNodesAcc++;
-    
+    this->numNodesAcc++;
     int idx;
     
     // Traverse the tree until reaching a leaf node
@@ -44,19 +41,15 @@ std::vector<Record*>* BPTree::searchRecord(float key) {
         
         // Move to the next child node
         curNode = curNode->ptrs.at(idx);
-        
-        // Increment the number of nodes accessed
-        this->numOfNodesAcc++;
+        this->numNodesAcc++;
     }
     
     // Find the index of the key in the leaf node
     idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
-    
+  
     // If the key is found, return a pointer to the associated records
-    if (idx < curNode->keys.size() && curNode->keys.at(idx) == key) {
+    if (idx < curNode->keys.size() && curNode->keys.at(idx) == key) 
         return &(curNode->records.at(idx));
-    }
-    
     // If the key is not found, return nullptr
     return nullptr;
 }

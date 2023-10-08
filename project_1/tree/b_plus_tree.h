@@ -10,8 +10,7 @@ private:
     int numNodes;
     int depth;
     size_t blkSize;
-    int numOfNodesAcc;
-
+    int numNodesAcc; // number of nodes accessed during operations
 
 public:
     BPTree(int blkSize);
@@ -50,14 +49,11 @@ public:
     void updateParentKeys(Node *currNode, Node *parentNode, int parentIndex, std::vector<Node *> &parents, std::vector<int> &prevIndexs);
 
     void printNode(Node* node);
-    //Set
-    void setNumOfNodesAccessed(int num){
-        this->numOfNodesAcc = num;
-    };
-    //Get
-    int getNumOfNodesAccessed() {
-        return numOfNodesAcc;
-    }
+
+    void resetNumNodesAcc() { this->numNodesAcc = 0; }
+
+    int getNumNodesAcc() { return numNodesAcc; }
+    
     void deleteRecordsBelowThreshold(Node * root, float threshold);
 };
 

@@ -8,12 +8,12 @@ typedef unsigned int uint;
 typedef unsigned char uchar;
 
 struct Record {
-    usint game_date_est; // days since epoch 
-    uint team_id_home;
-    char pts_home;
     float fg_pct_home;
     float ft_pct_home;
     float fg3_pct_home;
+    uint team_id_home;
+    usint game_date_est; // days since epoch 
+    char pts_home;
     char ast_home;
     char reb_home;
     bool home_team_wins;
