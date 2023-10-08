@@ -50,13 +50,10 @@ public:
 
     void printNode(Node* node);
 
-    void resetNumNodesAcc() {
-        this->numNodesAcc = 0;
-    };
+    void resetNumNodesAcc() { this->numNodesAcc = 0; }
 
-    int getNumNodesAcc() {
-        return numNodesAcc;
-    }
+    int getNumNodesAcc() { return numNodesAcc; }
+    
     void deleteRecordsBelowThreshold(Node * root, float threshold);
 };
 
