@@ -47,8 +47,7 @@ void BPTree::deleteKey(float key) {
         if (idx != 0)
             return;  
 
-        while (parents.back() != nullptr)
-        {
+        while (parents.back() != nullptr) {
             // iteratively check parent
             if (prevIdxs.back() == 0) {
                 parents.pop_back();
@@ -135,9 +134,8 @@ Node* BPTree::findParentNode(Node *parNode, Node *childNode) {
     int key, idx;
     Node *currNode = childNode;
     // Traverse from the child node to the leaf node
-    while (!currNode->isLeaf) {
+    while (!currNode->isLeaf) 
         currNode = currNode->ptrs.front();
-    }
     // Get the key from the leaf node
     key = currNode->keys.front();
     // Traverse from the parent node to the leaf node
@@ -145,12 +143,11 @@ Node* BPTree::findParentNode(Node *parNode, Node *childNode) {
         // Find the index where the key should be inserted in the parent node
         idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
         // Check if the child node is found at the current index in the parent node
-        if (parNode->ptrs.at(idx) == childNode) {
+        if (parNode->ptrs.at(idx) == childNode) 
             return parNode;
-        } else {
+        else 
             // Update the parent node to the next level
             parNode = parNode->ptrs.at(idx);
-        }
     }
     // If the parent node is not found, return nullptr
     return nullptr;

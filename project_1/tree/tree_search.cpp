@@ -21,7 +21,7 @@ Node* BPTree::searchNode(float key) {
 
 std::vector<Record*>* BPTree::searchRecord(float key) {
     Node* curNode = getRoot();
-    
+
     // If there is no root node, return nullptr
     if (curNode == nullptr)
         return nullptr;
@@ -32,14 +32,12 @@ std::vector<Record*>* BPTree::searchRecord(float key) {
     while (!curNode->isLeaf) {
         // Find the index of the next child node to traverse
         idx = std::upper_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
-    
         curNode = curNode->ptrs.at(idx);
         this->numNodesAcc++;
     }
     
     // Find the index of the key in the leaf node
     idx = std::lower_bound(curNode->keys.begin(), curNode->keys.end(), key) - curNode->keys.begin();
-  
     // If the key is found, return a pointer to the associated records
     if (idx < curNode->keys.size() && curNode->keys.at(idx) == key) 
         return &(curNode->records.at(idx));
