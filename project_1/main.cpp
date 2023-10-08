@@ -152,8 +152,6 @@ void experiment5(Disk *disk, BPTree *tree) {
 void deleteRecordsWithLowFGPCT(Disk* disk) {
     // Get the number of blocks in the disk
     int numBlks = disk->getNumBlks();
-    // Get the maximum number of records per block
-    int blkMaxRecords = disk->getBlkMaxRecords();
     // Get the size of a record in bytes
     size_t recordSize = sizeof(Record);
     // Initialize the count of blocks accessed to 0
@@ -163,13 +161,13 @@ void deleteRecordsWithLowFGPCT(Disk* disk) {
     // Start the timer
     chrono::high_resolution_clock::time_point before = chrono::high_resolution_clock::now();
     // Iterate over each block in the disk
-    for (size_t blockIdx = 0; blockIdx < numBlks; ++blockIdx) {
+    for (int blockIdx = 0; blockIdx < numBlks; ++blockIdx) {
         // Increment the count of blocks accessed
         numBlksAcc++;
         // Iterate over each record in the block
-        for (size_t recordIdx = 0; recordIdx < blkMaxRecords; ++recordIdx) {
+        for (size_t recordOffset = 0; recordOffset < disk->getBlockSize(); recordOffset += sizeof(Record)) {
             // Get a pointer to the current record
-            Record* record = disk->getRecord(blockIdx, recordIdx);
+            Record* record = disk->getRecord(blockIdx, recordOffset);
             
             // Check if the "FG_PCT_home" of the record is below or equal to 0.35
             if (record->fg_pct_home <= 0.35) {
@@ -194,8 +192,6 @@ void deleteRecordsWithLowFGPCT(Disk* disk) {
 void accessRecordsWithRange(Disk* disk) {
     // Get the number of blocks in the disk
     int numBlks = disk->getNumBlks();
-    // Get the maximum number of records per block
-    int blkMaxRecords = disk->getBlkMaxRecords();
     // Get the size of a single record
     size_t recordSize = sizeof(Record);
     // Initialize variables to keep track of the number of blocks and records accessed
@@ -210,9 +206,9 @@ void accessRecordsWithRange(Disk* disk) {
         numBlksAcc++;
         
         // Loop through each record in the block
-        for (size_t recordIdx = 0; recordIdx < blkMaxRecords; ++recordIdx) {
+        for (size_t recordOffset = 0; recordOffset < disk->getBlockSize(); recordOffset += sizeof(Record)) {
             // Get the current record
-            Record* record = disk->getRecord(blockIdx, recordIdx);
+            Record* record = disk->getRecord(blockIdx, recordOffset);
             
             // Check if the "FG_PCT_home" value of the record is between 0.6 and 1 (inclusive)
             if (0.6 <= record->fg_pct_home && record->fg_pct_home <= 1) {
@@ -238,7 +234,6 @@ void accessRecordsWithRange(Disk* disk) {
 void accessRecordsWithEqual(Disk* disk) {
     // Get the number of blocks, maximum records per block, and record size from the disk
     int numBlks = disk->getNumBlks();
-    int blkMaxRecords = disk->getBlkMaxRecords();
     size_t recordSize = sizeof(Record);
     // Variables to keep track of the number of blocks and records accessed
     int numBlksAcc = 0;
@@ -250,9 +245,9 @@ void accessRecordsWithEqual(Disk* disk) {
         // Increment the number of blocks accessed
         numBlksAcc++;
         // Loop through each record in the block
-        for (size_t recordIdx = 0; recordIdx < blkMaxRecords; ++recordIdx) {
+        for (size_t recordOffset = 0; recordOffset < disk->getBlockSize(); recordOffset += sizeof(Record)) {
             // Get the record from the disk
-            Record* record = disk->getRecord(blockIdx, recordIdx);
+            Record* record = disk->getRecord(blockIdx, recordOffset);
             
             // Check if the "FG_PCT_home" value of the record is equal to 0.5
             if (record->fg_pct_home = 0.5) {

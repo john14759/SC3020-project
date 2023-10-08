@@ -35,7 +35,7 @@ public:
 
     int getBlockId(Record *record);
 
-    Record *getRecord(int blockIdx, int recordIdx); 
+    Record *getRecord(int blockIdx, size_t recordOffset); 
 };
 
 #endif

@@ -62,9 +62,9 @@ int Disk::getBlockId(Record* record){
     return blockId;
 }
 
-Record* Disk::getRecord(int blockIdx, int recordIdx){
+Record* Disk::getRecord(int blockIdx, size_t recordOffset){
     // in this function, we use the block and record index, as well as block size and record size to locate the 
     // corresponding record
-    size_t offset = blockIdx * blkSize + recordIdx * recordSize;
+    size_t offset = blockIdx * blkSize + recordOffset;
     return reinterpret_cast<Record *>(startAddress + offset);
 }
