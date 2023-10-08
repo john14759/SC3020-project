@@ -272,7 +272,6 @@ void accessRecordsWithEqual(Disk* disk) {
 int main() {
     Disk* disk = new Disk(500000000, 400, sizeof(Record));
     BPTree* tree = new BPTree(400);
-    utils::readFileIntoDisk("games.txt", disk, tree);
     cout << endl;
     experiment1(disk, tree);
     cout << endl;
