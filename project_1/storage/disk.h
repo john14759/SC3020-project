@@ -31,7 +31,7 @@ public:
 
     int getBlockSize() {return blkSize;} 
 
-    int getMaxRecordsPerBlock() {return floor(blkSize / recordSize);}
+    int getBlkMaxRecords() {return floor(blkSize / recordSize);}
 
     int getBlockId(Record *record);
 

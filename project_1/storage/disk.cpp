@@ -24,19 +24,11 @@ Disk::~Disk() {
 bool Disk::allocateBlock() {
     // Check if allocating a new block will exceed the total size of the disk.
     if (blkSize * (numUsedBlks + 1) > size) {
-        // Print an error message indicating that the memory is full.
         cout << "Memory full" << endl;
-        // Return false to indicate that the block allocation failed.
         return false;
     }
-    
-    // Increment the number of used blocks.
     numUsedBlks++;
-    
-    // Reset the current block's used memory to zero.
     curBlkUsedMem = 0;
-    
-    // Return true to indicate that the block allocation was successful.
     return true;
 }
 
@@ -45,20 +37,15 @@ bool Disk::allocateBlock() {
 Record* Disk::writeRecord(Record record) {
     // Check if there is enough space in the current block for the record.
     if (curBlkUsedMem + recordSize > blkSize) {
-        // If there is not enough space, allocate a new block.
         if (!allocateBlock())
             return nullptr;
     }
     // Calculate the address of the record within the block.
     Record* recordAddress = reinterpret_cast<Record*>(startAddress + numUsedBlks * blkSize + curBlkUsedMem);
-    // Increment the number of used blocks if this is the first record being written.
     if (numUsedBlks == 0)
         numUsedBlks++;
-    // Update the amount of used memory in the current block.
     curBlkUsedMem += recordSize;
-    // Write the record to the calculated address.
     *recordAddress = record;
-    // Return the address of the written record.
     return recordAddress;
 }
 
@@ -67,21 +54,17 @@ void Disk::deleteRecord(Record* address) {
 }
 
 int Disk::getBlockId(Record* record){
-    //this function takes a pointer to a record and returns a size_t value which represents the block ID of the 
+    //this function takes a pointer to a record and returns an int value which represents the block ID of the 
     //record in the disk storage system
     uchar* recordBytes = reinterpret_cast<uchar*>(record);
-    // Calculate the offset of the record from the start address of the disk
     ptrdiff_t offset = recordBytes - startAddress;
-    // Calculate the block ID by dividing the offset by the block size
-    size_t blockId = offset / blkSize;
-    // Return the block ID
+    int blockId = offset / blkSize;
     return blockId;
 }
 
 Record* Disk::getRecord(int blockIdx, int recordIdx){
-    //in this function, we use the block and record index, as well as block size and record size to locate the 
-    //corresponding record
+    // in this function, we use the block and record index, as well as block size and record size to locate the 
+    // corresponding record
     size_t offset = blockIdx * blkSize + recordIdx * recordSize;
-    // Interpret the memory at the calculated offset as a Record pointer
     return reinterpret_cast<Record *>(startAddress + offset);
 }

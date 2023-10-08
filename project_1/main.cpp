@@ -13,7 +13,7 @@ void experiment1(Disk *disk, BPTree *tree){
     cout << "Experiment 1:" << endl;
     cout << "Number of records: " << utils::readFileIntoDisk("games.txt", disk, tree) << endl;
     cout << "Size of a record: " << sizeof(Record) << " bytes" << endl;
-    cout << "Number of records stored in a block: " << disk->getMaxRecordsperBlock() << endl;
+    cout << "Number of records stored in a block: " << disk->getBlkMaxRecords() << endl;
     cout << "Number of blocks used to store data in the disk: " << disk->getNumBlks() << endl;
 }
 
@@ -38,7 +38,7 @@ void experiment3(Disk *disk, BPTree *tree) {
     chrono::duration<double> timeTaken = chrono::duration_cast<chrono::duration<double>>(after - before);
 
     //Calculation of the average FG3_PCT_HOME 
-    unordered_set<size_t> resultSet;
+    unordered_set<int> resultSet;
     float total_FG_PCT_home = 0;
     for (Record *r : *result) {
         resultSet.insert(disk->getBlockId(r));
@@ -149,11 +149,11 @@ void experiment5(Disk *disk, BPTree *tree) {
 }
 
 // Function to delete movies with "FG_PCT_home" below 0.35 inclusively for experiment 5
-void deleteMoviesWithLowFGPCT(Disk* disk) {
+void deleteRecordsWithLowFGPCT(Disk* disk) {
     // Get the number of blocks in the disk
     size_t numBlocks = disk->getNumBlks();
     // Get the maximum number of records per block
-    size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
+    size_t maxRecordsPerBlock = disk->getBlkMaxRecords();
     // Get the size of a record in bytes
     size_t recordSize = sizeof(Record);
     // Initialize the count of blocks accessed to 0
@@ -191,11 +191,11 @@ void deleteMoviesWithLowFGPCT(Disk* disk) {
 }
 
 // Function to delete movies with "FG_PCT_home" 0.6 to 1 inclusively for experiment 4
-void accessMoviesWithRange(Disk* disk) {
+void accessRecordsWithRange(Disk* disk) {
     // Get the number of blocks in the disk
     size_t numBlocks = disk->getNumBlks();
     // Get the maximum number of records per block
-    size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
+    size_t maxRecordsPerBlock = disk->getBlkMaxRecords();
     // Get the size of a single record
     size_t recordSize = sizeof(Record);
     // Initialize variables to keep track of the number of blocks and records accessed
@@ -235,10 +235,10 @@ void accessMoviesWithRange(Disk* disk) {
 }
 
 // Function to delete movies with "FG_PCT_home" equal to 0.5 for experiment 3
-void accessMoviesWithEqual(Disk* disk) {
+void accessRecordsWithEqual(Disk* disk) {
     // Get the number of blocks, maximum records per block, and record size from the disk
     size_t numBlocks = disk->getNumBlks();
-    size_t maxRecordsPerBlock = disk->getmaxRecordsperBlock();
+    size_t maxRecordsPerBlock = disk->getBlkMaxRecords();
     size_t recordSize = sizeof(Record);
     // Variables to keep track of the number of blocks and records accessed
     int numOfBlocksAccessed = 0;
@@ -284,15 +284,13 @@ int main() {
     experiment2(tree);
     cout << endl;
     experiment3(disk, tree);
-    accessMoviesWithEqual(disk);
+    accessRecordsWithEqual(disk);
     cout << endl;
     experiment4(disk, tree);
-    cout << endl;
-    experiment4(disk, tree);
-    accessMoviesWithRange(disk);
+    accessRecordsWithRange(disk);
     cout << endl;
     experiment5(disk, tree);
-    deleteMoviesWithLowFGPCT(disk);
+    deleteRecordsWithLowFGPCT(disk);
     cout << endl;
 }
 

@@ -68,33 +68,33 @@ void BPTree::deleteKey(float key) {
     else {
         int parIdx = prevIdxs.back();
         prevIdxs.pop_back();
-        Node *leftNeighbour = nullptr, *rightNeighbour = nullptr;
+        Node *left = nullptr, *right = nullptr;
         Node *parNode = parents.back();
         parents.pop_back();
 
         // there is left neighbour from same parent node
         if (parIdx > 0) {
-            leftNeighbour = parNode->ptrs.at(parIdx - 1);
+            left = parNode->ptrs.at(parIdx - 1);
             // borrow key from left neighbour
-            if (leftNeighbour->keys.size() > minKeys) {
-                currNode->keys.insert(currNode->keys.begin(), leftNeighbour->keys.back());
-                currNode->records.insert(currNode->records.begin(), leftNeighbour->records.back());
-                leftNeighbour->keys.pop_back();
-                leftNeighbour->records.pop_back();
+            if (left->keys.size() > minKeys) {
+                currNode->keys.insert(currNode->keys.begin(), left->keys.back());
+                currNode->records.insert(currNode->records.begin(), left->records.back());
+                left->keys.pop_back();
+                left->records.pop_back();
                 parNode->keys[parIdx] = currNode->keys.front();
                 return;
             }
         }
         // there is right neighbour from same parent node
         if (parIdx < parNode->keys.size() - 1) {
-            rightNeighbour = parNode->ptrs.at(parIdx + 1);
-            if (rightNeighbour->keys.size() > minKeys){
+            right = parNode->ptrs.at(parIdx + 1);
+            if (right->keys.size() > minKeys) {
                 // borrow key from right neighbour
-                currNode->keys.insert(currNode->keys.end(), rightNeighbour->keys.front());
-                currNode->records.insert(currNode->records.end(), rightNeighbour->records.front());
-                rightNeighbour->keys.erase(rightNeighbour->keys.begin());
-                rightNeighbour->records.erase(rightNeighbour->records.begin());
-                parNode->keys[parIdx] = rightNeighbour->keys.front();
+                currNode->keys.insert(currNode->keys.end(), right->keys.front());
+                currNode->records.insert(currNode->records.end(), right->records.front());
+                right->keys.erase(right->keys.begin());
+                right->records.erase(right->records.begin());
+                parNode->keys[parIdx] = right->keys.front();
 
                 if (!idx) 
                     this->updateParentKeys(currNode, parNode, parIdx, parents, prevIdxs);
@@ -103,36 +103,36 @@ void BPTree::deleteKey(float key) {
         }
 
         // left neighbour exists
-        if (leftNeighbour != nullptr) {
+        if (left != nullptr) {
             // left neighbour exists has min keys, merge
             while (currNode->keys.size() != 0) {
-                leftNeighbour->keys.push_back(currNode->keys.front());
-                leftNeighbour->records.push_back(currNode->records.front());
+                left->keys.push_back(currNode->keys.front());
+                left->records.push_back(currNode->records.front());
                 currNode->keys.erase(currNode->keys.begin());
                 currNode->records.erase(currNode->records.begin());
             }
 
-            leftNeighbour->nextNodePtr = currNode->nextNodePtr;
+            left->nextNodePtr = currNode->nextNodePtr;
             this->removeInternal(parNode->keys.at(parIdx - 2), parNode, currNode);
         }
         else {
             // right neighbour has min keys, merge
-            while (rightNeighbour->keys.size() != 0) {
-                currNode->keys.push_back(rightNeighbour->keys.front());
-                currNode->records.push_back(rightNeighbour->records.front());
-                rightNeighbour->keys.erase(rightNeighbour->keys.begin());
-                rightNeighbour->records.erase(rightNeighbour->records.begin());
+            while (right->keys.size() != 0) {
+                currNode->keys.push_back(right->keys.front());
+                currNode->records.push_back(right->records.front());
+                right->keys.erase(right->keys.begin());
+                right->records.erase(right->records.begin());
             }
 
-            currNode->nextNodePtr = rightNeighbour->nextNodePtr;
-            this->removeInternal(parNode->keys.at(parIdx), parNode, rightNeighbour);
+            currNode->nextNodePtr = right->nextNodePtr;
+            this->removeInternal(parNode->keys.at(parIdx), parNode, right);
         }
     }
 }
 
 // This function finds the parent node of a given child node in a B+ tree.
-Node* BPTree::findParentNode(Node *parentNode, Node *childNode) {
-    int key, index;
+Node* BPTree::findParentNode(Node *parNode, Node *childNode) {
+    int key, idx;
     Node *currNode = childNode;
     // Traverse from the child node to the leaf node
     while (!currNode->isLeaf) {
@@ -141,29 +141,29 @@ Node* BPTree::findParentNode(Node *parentNode, Node *childNode) {
     // Get the key from the leaf node
     key = currNode->keys.front();
     // Traverse from the parent node to the leaf node
-    while (!parentNode->isLeaf) {
+    while (!parNode->isLeaf) {
         // Find the index where the key should be inserted in the parent node
-        index = std::upper_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
+        idx = std::upper_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
         // Check if the child node is found at the current index in the parent node
-        if (parentNode->ptrs.at(index) == childNode) {
-            return parentNode;
+        if (parNode->ptrs.at(idx) == childNode) {
+            return parNode;
         } else {
             // Update the parent node to the next level
-            parentNode = parentNode->ptrs.at(index);
+            parNode = parNode->ptrs.at(idx);
         }
     }
     // If the parent node is not found, return nullptr
     return nullptr;
 }
 
-void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete) {   
+void BPTree::removeInternal(int key, Node *parNode, Node *nodeToDelete) {   
     // Check if the parent node is the root
-    if (parentNode == this->root) {
+    if (parNode == this->root) {
         // Check if the parent node has only one key
-        if (parentNode->keys.size() == 1) {   
+        if (parNode->keys.size() == 1) {   
             // Set the root to the appropriate child node
-            if (parentNode->ptrs.at(0) == nodeToDelete)
-                this->setRoot(parentNode->ptrs.at(1));    
+            if (parNode->ptrs.at(0) == nodeToDelete)
+                this->setRoot(parNode->ptrs.at(1));    
             else
                 this->setRoot(parNode->ptrs.at(0));
             return;
@@ -171,17 +171,17 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete) {
     }
 
     // Delete the key and pointer from the parent node
-    int index = std::lower_bound(parentNode->keys.begin(), parentNode->keys.end(), key) - parentNode->keys.begin();
-    parentNode->keys.erase(parentNode->keys.begin() + index);
-    for (index = 0; index < parentNode->ptrs.size(); index++) {
-        if (parentNode->ptrs[index] == nodeToDelete)
+    int idx = std::lower_bound(parNode->keys.begin(), parNode->keys.end(), key) - parNode->keys.begin();
+    parNode->keys.erase(parNode->keys.begin() + idx);
+    for (idx = 0; idx < parNode->ptrs.size(); idx++) {
+        if (parNode->ptrs[idx] == nodeToDelete)
             break;
     }
     parNode->ptrs.erase(parNode->ptrs.begin() + idx);
     this->numNodes--;
 
     // Return if the parent node has more than or equal to the minimum number of keys
-    if (parentNode->keys.size() >= this->maxKeys / 2)
+    if (parNode->keys.size() >= this->maxKeys / 2)
         return;
 
     // find parentNode's left and right neighbours
@@ -191,14 +191,14 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete) {
             break;
     }
 
-    Node *leftNeighbour, *rightNeighbour;
-    if (index > 0) {
-        leftNeighbour = parentNode->ptrs.at(index - 1);
+    Node *left, *right;
+    if (idx > 0) {
+        left = parNode->ptrs.at(idx - 1);
         // Check if the left neighbor has more than the minimum number of keys
-        if (leftNeighbour->keys.size() > this->maxKeys / 2) {
+        if (left->keys.size() > this->maxKeys / 2) {
              // Update the keys and pointers in the parent node and left neighbor
-            parentNode->keys.insert(parentNode->keys.begin(), ancestorNode->keys.at(index - 1));
-            ancestorNode->keys[index - 1] = leftNeighbour->keys.back();
+            parNode->keys.insert(parNode->keys.begin(), ancestorNode->keys.at(idx - 1));
+            ancestorNode->keys[idx - 1] = left->keys.back();
 
             parNode->ptrs.insert(parNode->ptrs.begin(), left->ptrs.back());
 
@@ -211,12 +211,11 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete) {
         right = ancestorNode->ptrs.at(idx + 1);
 
         // Check if the right neighbor has more than the minimum number of keys
-        if (rightNeighbour->keys.size() > this->maxKeys / 2)
-        {
+        if (right->keys.size() > this->maxKeys / 2) {
             // Update the keys and pointers in the parent node and right neighbor
-            parentNode->keys.push_back(ancestorNode->keys.at(index));
-            parentNode->keys[index] = rightNeighbour->keys.front();
-            rightNeighbour->keys.erase(rightNeighbour->keys.begin());
+            parNode->keys.push_back(ancestorNode->keys.at(idx));
+            parNode->keys[idx] = right->keys.front();
+            right->keys.erase(right->keys.begin());
             parNode->ptrs.push_back(right->ptrs.front());
             right->ptrs.erase(right->ptrs.begin());
 
@@ -224,38 +223,31 @@ void BPTree::removeInternal(int key, Node *parentNode, Node *nodeToDelete) {
         }
     }
     // Merge with the left neighbor if it exists
-    if (index > 0)
-    {
+    if (idx > 0) {
         // Move all keys and pointers from the parent node to the left neighbor
-        leftNeighbour->keys.push_back(ancestorNode->keys.at(index - 1));
+        left->keys.push_back(ancestorNode->keys.at(idx - 1));
 
-        while (parentNode->keys.size() != 0)
-        {
-            leftNeighbour->keys.push_back(parentNode->keys.front());
-        }
+        while (parNode->keys.size() != 0)
+            left->keys.push_back(parNode->keys.front());
+        
         // Move all pointers from the parent node to the left neighbor
-        while (parentNode->ptrs.size() != 0)
-        {
+        while (parNode->ptrs.size() != 0)
             // Add the first pointer of the parent node to the ptrs vector of the left neighbor
-            leftNeighbour->ptrs.push_back(parentNode->ptrs.front());
-        }
+            left->ptrs.push_back(parNode->ptrs.front());
+        
         // Remove the key at index - 1 from the ancestor node
-        this->removeInternal(ancestorNode->keys.at(index - 1), ancestorNode, parentNode);
+        this->removeInternal(ancestorNode->keys.at(idx - 1), ancestorNode, parNode);
     }
-    else if (index < ancestorNode->ptrs.size() - 1)
-    {
+    else if (idx < ancestorNode->ptrs.size() - 1) {
     // Merge with the right neighbor if it exists
 
     // Add the key from the ancestor node at index to the keys vector of the parent node
     
-        parentNode->keys.push_back(ancestorNode->keys.at(index));
-
+        parNode->keys.push_back(ancestorNode->keys.at(idx));
         while (right->keys.size() != 0)
             parNode->keys.push_back(right->keys.front());
-
         while (right->ptrs.size() != 0)
             parNode->ptrs.push_back(right->ptrs.front());
-
         this->removeInternal(ancestorNode->keys.at(idx), ancestorNode, right);
     }
 }
