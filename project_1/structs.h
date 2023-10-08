@@ -21,10 +21,10 @@ struct Record {
 
 struct Node {
     bool isLeaf;
-    std::vector<float> keys;
-    std::vector<Node*> ptrs;
-    std::vector<std::vector<Record*>> records;
-    Node* nextNodePtr;
+    std::vector<float> keys; 
+    std::vector<Node*> ptrs; // pointers to blocks
+    std::vector<std::vector<Record*>> records; // pointers to records (only for leaf nodes)
+    Node* nextNodePtr; // pointer to next node (only for leaf nodes)
 
     Node(bool isLeaf) {
         this->isLeaf = isLeaf;
