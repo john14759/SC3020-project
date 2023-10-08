@@ -1,6 +1,6 @@
 # SC3020-project-1
 
-## Getting Started
+## Running the program
 ### Running on VS Code
 1. Follow [this guide](https://code.visualstudio.com/docs/languages/cpp) to ensure that C/C++ support for VS Code has been set up correctly
 2. Open your [.vscode/tasks.json](../.vscode/tasks.json) file and modify the "command" field to point to the correct location of the g++ compiler. Replace the existing "command" value with the full path to your g++.exe. For example:
