@@ -1,3 +1,6 @@
+//  C:\\msys64\\mingw64\\bin\\g++.exe (LDZ)
+//  C:\\Users\\john1\\mingw64\\bin\\g++.exe (John)
+//  C:\\Users\\taich\\mingw64\\bin\\g++.exe
 {
   "tasks": [
     {
@@ -8,15 +11,15 @@
         "-fdiagnostics-color=always",
         "-g",
         "${fileDirname}/*.cpp",
+        "${fileDirname}/storage/*.cpp",
+        "${fileDirname}/tree/*.cpp",
         "-o",
         "${fileDirname}\\${fileBasenameNoExtension}.exe"
       ],
       "options": {
         "cwd": "${fileDirname}"
       },
-      "problemMatcher": [
-        "$gcc"
-      ],
+      "problemMatcher": ["$gcc"],
       "group": {
         "kind": "build",
         "isDefault": true
