@@ -25,4 +25,6 @@ CREATE TABLE IF NOT EXISTS "nation" (
 WITH (
 	OIDS = FALSE
 );
-  	
+
+\copy "region" from 'region.tbl' DELIMITER '|' CSV;
+\copy "nation" from 'nation.tbl' DELIMITER '|' CSV;
