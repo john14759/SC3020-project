@@ -1,19 +1,23 @@
 # SC3020-project-2
 
-## Prerequisites
-- [TPC-H](https://www.tpc.org/tpch/) sample data files
+## Getting Started
+
+To get a local copy up and running follow these steps.
+ 
+### Prerequisites
+- [TPC-H](https://www.tpc.org/tpch/) sample data files. Refer [here](https://tedamoh.com/en/blog/55-data-modeling/78-generating-large-example-data-with-tpc-h) for information on using the TPC-H tool dbgen.
 - [PostgreSQL](https://www.postgresql.org/)
 
-## Installation 
+### Installation 
 
-### Importing the TPC-H dataset into your PostgreSQL database
+#### Importing the TPC-H dataset into your PostgreSQL database
 
-1. Navigate to `/data`
+1. Navigate to the `/data` directory
 ```bash
 cd data
 ```
-2. Move your TPC-H .tbl files into `/data`
-3. Run the `remove_trailing_delimiter.sh` script to remove trailing delimiters if needed
+2. Move your TPC-H .tbl files into the `/data` directory
+3. If needed, run the `remove_trailing_delimiter.sh` script to remove trailing delimiters
 ```bash
 ./remove_trailing_delimiter.sh
 ```
@@ -21,7 +25,6 @@ cd data
 ```bash
 psql -U username -d TPC-H -a -f init.pgsql
 ```
-  
 
 ## Contributions
 This project was built by the following:
