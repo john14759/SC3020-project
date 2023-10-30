@@ -21,9 +21,10 @@ cd data
 ```bash
 ./remove_trailing_delimiter.sh
 ```
-4. Run the `init.pgsql` file to create tables and import data from the .tbl files into the PostgreSQL database. Make sure to replace `username` with the actual PostgreSQL username you intend to use.
+4. Create a database with the name "TPC_H" on PostgreSQL if you have not done so.
+5. Run the `init.pgsql` file to create tables and import data from the .tbl files into the PostgreSQL database. Replace `postgres` with your username if needed.
 ```bash
-psql -U username -d TPC-H -a -f init.pgsql
+psql -U postgres -d TPC-H -a -f init.pgsql
 ```
 
 ## Contributions
