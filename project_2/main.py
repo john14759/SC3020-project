@@ -1,22 +1,33 @@
 import tkinter as tk
-from test import connection_to_db
+from tkinter import ttk  # Import ttk from tkinter for Treeview
+import graphviz
+from test import connection_to_db, get_qep_image
 
+#test code to try to output image of QEP
 def execute_sql_query():
     query = sql_entry.get()
     try:
         connection, cursor = connection_to_db()
         cursor.execute(query)
-        
-        # Fetch the results
-        rows = cursor.fetchall()
 
-        for row in rows:
-            print(row)
+        # Fetch the QEP image
+        qep_dot = get_qep_image(cursor, query)
 
-
-        # Close the cursor and the database connection when done
         cursor.close()
         connection.close()
+
+        if qep_dot:
+            qep_window = tk.Toplevel(window)
+            qep_window.title("Query Execution Plan (QEP)")
+
+            # Render the QEP tree
+            qep_dot.render("qep_tree", view=True)
+            img_label = tk.Label(qep_window, text="Query Execution Plan (QEP)")
+            img_label.pack()
+
+        else:
+            result_label.config(text="QEP not available for this query")
+
         result_label.config(text="Query executed successfully")
     except Exception as e:
         result_label.config(text=f"Error: {str(e)}")
@@ -37,6 +48,7 @@ result_label = tk.Label(window, text="")
 result_label.pack(padx=10, pady=10)
 
 window.mainloop()
+
 
 
 
