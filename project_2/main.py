@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk  # Import ttk from tkinter for Treeview
 import graphviz
-from graphviz import Digraph
-from test import connection_to_db, get_qep_image
+from graphviz import Graph
+from test import connection_to_db, get_qep_image, add_nodes
 
 #SELECT * FROM customer WHERE c_custkey = 1 OR c_custkey = 2
 #test code to try to output image of QEP
@@ -13,21 +13,17 @@ def execute_sql_query():
         cursor.execute(query)
 
         # Fetch the QEP image
-        qep_json = get_qep_image(cursor, query)
-
-        # Add the nodes to the graph
-        qep_dot = graphviz.Digraph(comment="Query Execution Plan")
-        qep_dot.add_nodes(qep_json["Plan"])
+        qep_img = get_qep_image(cursor, query)
 
         cursor.close()
         connection.close()
 
-        if qep_dot:
+        if qep_img:
             qep_window = tk.Toplevel(window)
             qep_window.title("Query Execution Plan (QEP)")
 
             # Render the QEP tree
-            qep_dot.render("qep_tree", view=True)
+            qep_img.render("qep_tree", view=True)
             img_label = tk.Label(qep_window, text="Query Execution Plan (QEP)")
             img_label.pack()
 
