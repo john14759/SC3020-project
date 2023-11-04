@@ -1,4 +1,6 @@
 import psycopg2
+import graphviz
+from graphviz import Digraph
 
 def connection_to_db():    
     try:
@@ -30,7 +32,7 @@ def connection_to_db():
 
 def get_qep_image(cursor, query):
     cursor.execute(f"EXPLAIN (FORMAT JSON) {query}")
-    qep_json = cursor.fetchone()[0]
+    qep_json = cursor.fetchone()[0][0]
     print(qep_json)
 
     # Check if the QEP image is available in the JSON
@@ -42,14 +44,18 @@ def get_qep_image(cursor, query):
         return None
 
 def add_nodes(dot, plan):
-    if "Node Type" in plan:
-        # Construct a label with the desired information
-        node_label = f"{plan['Node Type']}\nStartup Cost: {plan.get('Startup Cost', 'N/A')}\nTotal Cost: {plan.get('Total Cost', 'N/A')}"
-        dot.node(node_label, label=node_label)
+  if "Node Type" in plan:
+    # Construct a label with the desired information
+    node_label = f"{plan['Node Type']}\nStartup Cost: {plan.get('Startup Cost', 'N/A')}\nTotal Cost: {plan.get('Total Cost', 'N/A')}"
 
-        if "Plans" in plan:
-            for subplan in plan["Plans"]:
-                add_nodes(dot, subplan)
-                # Connect the node to its subplan
-                dot.edge(node_label, f"{subplan['Node Type']}\nStartup Cost: {subplan.get('Startup Cost', 'N/A')}\nTotal Cost: {subplan.get('Total Cost', 'N/A')}")
+    # Add the node to the graph
+    dot.node(node_label, label=node_label)
+
+    if "Plans" in plan:
+      for subplan in plan["Plans"]:
+        # Recursively add the subplan to the graph
+        add_nodes(dot, subplan)
+
+        # Connect the node to its subplan
+        dot.edge(node_label, f"{subplan['Node Type']}\nStartup Cost: {subplan.get('Startup Cost', 'N/A')}\nTotal Cost: {subplan.get('Total Cost', 'N/A')}")
 

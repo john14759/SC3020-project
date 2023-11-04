@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk  # Import ttk from tkinter for Treeview
 import graphviz
+from graphviz import Digraph
 from test import connection_to_db, get_qep_image
 
+#SELECT * FROM customer WHERE c_custkey = 1 OR c_custkey = 2
 #test code to try to output image of QEP
 def execute_sql_query():
     query = sql_entry.get()
@@ -11,7 +13,11 @@ def execute_sql_query():
         cursor.execute(query)
 
         # Fetch the QEP image
-        qep_dot = get_qep_image(cursor, query)
+        qep_json = get_qep_image(cursor, query)
+
+        # Add the nodes to the graph
+        qep_dot = graphviz.Digraph(comment="Query Execution Plan")
+        qep_dot.add_nodes(qep_json["Plan"])
 
         cursor.close()
         connection.close()
@@ -28,7 +34,6 @@ def execute_sql_query():
         else:
             result_label.config(text="QEP not available for this query")
 
-        result_label.config(text="Query executed successfully")
     except Exception as e:
         result_label.config(text=f"Error: {str(e)}")
 
@@ -48,8 +53,3 @@ result_label = tk.Label(window, text="")
 result_label.pack(padx=10, pady=10)
 
 window.mainloop()
-
-
-
-
-
