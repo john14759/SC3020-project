@@ -1,6 +1,6 @@
 import psycopg2
 import graphviz
-from graphviz import Graph
+from graphviz import Digraph
 
 def connection_to_db():    
     try:
@@ -37,7 +37,7 @@ def get_qep_image(cursor, query):
 
     # Check if the QEP image is available in the JSON
     if "Plan" in qep_json:
-        dot = Graph(comment="Query Execution Plan")
+        dot = Digraph(comment="Query Execution Plan")
         add_nodes(dot, qep_json["Plan"])
         return dot
     else:

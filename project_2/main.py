@@ -1,38 +1,36 @@
 import tkinter as tk
-from tkinter import ttk  # Import ttk from tkinter for Treeview
-import graphviz
-from graphviz import Graph
-from test import connection_to_db, get_qep_image, add_nodes
+from PIL import Image, ImageTk
+from test import connection_to_db, get_qep_image
 
-#SELECT * FROM customer WHERE c_custkey = 1 OR c_custkey = 2
-#test code to try to output image of QEP
+# Define a function to execute the SQL query and display the QEP image
 def execute_sql_query():
     query = sql_entry.get()
+
     try:
         connection, cursor = connection_to_db()
         cursor.execute(query)
 
         # Fetch the QEP image
         qep_img = get_qep_image(cursor, query)
-
         cursor.close()
         connection.close()
 
-        if qep_img:
-            qep_window = tk.Toplevel(window)
-            qep_window.title("Query Execution Plan (QEP)")
+        # Save the QEP image as a PNG file
+        qep_img.format = 'png'
+        qep_img.render(filename="qep_tree")
 
-            # Render the QEP tree
-            qep_img.render("qep_tree", view=True)
-            img_label = tk.Label(qep_window, text="Query Execution Plan (QEP)")
-            img_label.pack()
+        # Open the QEP image and convert it to Tkinter PhotoImage
+        qep_image = Image.open("qep_tree.png")
+        qep_image = ImageTk.PhotoImage(qep_image)
 
-        else:
-            result_label.config(text="QEP not available for this query")
+        qep_label.config(image=qep_image)
+        qep_label.image = qep_image
+        qep_label.pack()
 
     except Exception as e:
         result_label.config(text=f"Error: {str(e)}")
 
+# Create the main window
 window = tk.Tk()
 window.title("SQL Query Executor")
 
@@ -44,8 +42,13 @@ sql_entry.pack(padx=10, pady=10)
 execute_button = tk.Button(window, text="Execute Query", command=execute_sql_query)
 execute_button.pack(padx=10, pady=10)
 
+# Create a label to display the QEP image
+qep_label = tk.Label(window)
+qep_label.pack()
+
 # Create a label to display the result
 result_label = tk.Label(window, text="")
 result_label.pack(padx=10, pady=10)
 
+# Start the mainloop
 window.mainloop()
