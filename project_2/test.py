@@ -44,6 +44,19 @@ def get_qep_image(cursor, query):
         return dot
     else:
         return None
+    
+def get_qep_statements(cursor, query):
+    explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
+    cursor.execute(explain_query)
+    qep_json = cursor.fetchone()[0][0]
+    statements = []
+
+    # Check if the QEP image is available in the JSON
+    if "Plan" in qep_json:
+        _, statements = analyze_qep(qep_json["Plan"], statements=statements)
+        return statements
+    else:
+        return None
 
 def add_nodes(dot, plan, parent_id=None, node_id=0):
     if "Node Type" in plan:
@@ -94,7 +107,7 @@ def explain_join_type(join_type):
     }
     return explanations.get(join_type, f'There is no join available in this step for explanation.')
 
-def analyze_qep(qep, indent=0, first_line_indent=0, step=1):
+def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     """
     Analyzes the Query Execution Plan (QEP) and prints a step-by-step analysis.
 
@@ -103,32 +116,40 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1):
     - indent (int): The current indentation level for formatting.
     - first_line_indent (int): Additional indentation for the first line.
     - step (int): The current step number.
+    - statements (list): A list to store the printf statements.
 
     Returns:
     None
     """
     indent_str = " " * first_line_indent
 
+    # Initialize the statements list if not provided
+    if statements is None:
+        statements = []
+
     # Recursively analyze child nodes if they exist
     plans = qep.get('Plans', [])
     for i, plan in enumerate(reversed(plans), start=1):
         # Additional indentation for child nodes
-        step = analyze_qep(plan, indent + 2, first_line_indent, step)
+        step, statements = analyze_qep(plan, indent + 2, first_line_indent, step, statements)
 
-    # Print details of the current node
+    # Append details of the current node to the statements list
     node_type = qep.get('Node Type', 'NULL')
     join_type = qep.get('Join Type', 'NULL')
     relation_name = qep.get('Relation Name', 'NULL')
     index_name = qep.get('Index Name', 'NULL')
 
-    print(f"{indent_str}Step {step}:")
-    print(f"{indent_str}  ({node_type}) {explain_node_type(node_type)}")
-    print(f"{indent_str}  ({join_type}) {explain_join_type(join_type)}")
-    print(f"{indent_str}  Relation Name: {relation_name}")
-    print(f"{indent_str}  Index Name: {index_name}")
-    print()
+    statement = (
+        f"{indent_str}Step {step}:\n"
+        f"{indent_str}  ({node_type}) {explain_node_type(node_type)}\n"
+        f"{indent_str}  ({join_type}) {explain_join_type(join_type)}\n"
+        f"{indent_str}  Relation Name: {relation_name}\n"
+        f"{indent_str}  Index Name: {index_name}\n\n"
+    )
 
-    return step + 1
+    statements.append(statement)
+
+    return step + 1, statements
 
 
 
