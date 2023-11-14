@@ -35,6 +35,7 @@ def get_qep_image(cursor, query):
     cursor.execute(explain_query)
     qep_json = cursor.fetchone()[0][0]
     print(qep_json)
+    analyze_qep(qep_json['Plan'])
 
     # Check if the QEP image is available in the JSON
     if "Plan" in qep_json:
@@ -75,9 +76,59 @@ def add_nodes(dot, plan, parent_id=None, node_id=0):
     # Return the next available node_id
     return node_id
 
+def explain_node_type(node_type):
+    explanations = {
+        'Bitmap Heap Scan': 'Reads data from a table using a bitmap and retrieves matching rows.',
+        'Bitmap Index Scan': 'Uses a bitmap to find matching rows in an index.',
+        'BitmapOr': 'Performs a logical OR operation on the results of multiple bitmap scans.',
+        # Add more explanations for other node types as needed
+    }
+    return explanations.get(node_type, f'There is no join available in this step for explanation.')
 
+def explain_join_type(join_type):
+    explanations = {
+        'Nested Loop': 'Joins two tables by nested loop iteration over the outer and inner tables.',
+        'Hash Join': 'Joins two tables using a hash function to distribute rows across buckets.',
+        'Merge Join': 'Joins two pre-sorted tables by merging their sorted rows.',
+        # Add more explanations for other join types as needed
+    }
+    return explanations.get(join_type, f'There is no join available in this step for explanation.')
 
+def analyze_qep(qep, indent=0, first_line_indent=0, step=1):
+    """
+    Analyzes the Query Execution Plan (QEP) and prints a step-by-step analysis.
 
+    Args:
+    - qep (dict): The Query Execution Plan in JSON format.
+    - indent (int): The current indentation level for formatting.
+    - first_line_indent (int): Additional indentation for the first line.
+    - step (int): The current step number.
+
+    Returns:
+    None
+    """
+    indent_str = " " * first_line_indent
+
+    # Recursively analyze child nodes if they exist
+    plans = qep.get('Plans', [])
+    for i, plan in enumerate(reversed(plans), start=1):
+        # Additional indentation for child nodes
+        step = analyze_qep(plan, indent + 2, first_line_indent, step)
+
+    # Print details of the current node
+    node_type = qep.get('Node Type', 'NULL')
+    join_type = qep.get('Join Type', 'NULL')
+    relation_name = qep.get('Relation Name', 'NULL')
+    index_name = qep.get('Index Name', 'NULL')
+
+    print(f"{indent_str}Step {step}:")
+    print(f"{indent_str}  ({node_type}) {explain_node_type(node_type)}")
+    print(f"{indent_str}  ({join_type}) {explain_join_type(join_type)}")
+    print(f"{indent_str}  Relation Name: {relation_name}")
+    print(f"{indent_str}  Index Name: {index_name}")
+    print()
+
+    return step + 1
 
 
 
