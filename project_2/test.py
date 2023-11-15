@@ -7,7 +7,7 @@ def connect_to_db():
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "postgres"
+        password = "voidbeast1"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 
@@ -35,32 +35,42 @@ def close_db_connection():
     connection.close()
 
 def get_qep_image(query):
-    explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
-    cursor.execute(explain_query)
-    qep_json = cursor.fetchone()[0][0]
-    print(qep_json)
-    analyze_qep(qep_json['Plan'])
+    try:
+        explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
+        cursor.execute(explain_query)
+        qep_json = cursor.fetchone()[0][0]
+        print(qep_json)
+        analyze_qep(qep_json['Plan'])
 
-    # Check if the QEP image is available in the JSON
-    if "Plan" in qep_json:
-        dot = Digraph(comment="Query Execution Plan")
-        add_nodes(dot, qep_json["Plan"])
-        return dot
-    else:
-        return None
+        # Check if the QEP image is available in the JSON
+        if "Plan" in qep_json:
+            dot = Digraph(comment="Query Execution Plan")
+            dot.graph_attr['bgcolor'] = 'lightyellow'
+            add_nodes(dot, qep_json["Plan"])
+            return dot
+        else:
+            return None
+        
+    except Exception as e:
+        # Handle exceptions, and return an informative message
+        return [f"Error analyzing the query: {str(e)}"]
     
 def get_qep_statements(query):
-    explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
-    cursor.execute(explain_query)
-    qep_json = cursor.fetchone()[0][0]
-    statements = []
+    try:
+        explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
+        cursor.execute(explain_query)
+        qep_json = cursor.fetchone()[0][0]
+        statements = []
 
-    # Check if the QEP image is available in the JSON
-    if "Plan" in qep_json:
-        _, statements = analyze_qep(qep_json["Plan"], statements=statements)
-        return statements
-    else:
-        return None
+        # Check if the QEP image is available in the JSON
+        if "Plan" in qep_json:
+            _, statements = analyze_qep(qep_json["Plan"], statements=statements)
+            return statements
+        else:
+            return None
+    except Exception as e:
+        # Handle exceptions, and return an informative message
+        return [f"Error analyzing the query: {str(e)}"]
 
 def get_buffer_size():
     cursor.execute("show shared_buffers")
@@ -103,21 +113,55 @@ def add_nodes(dot, plan, parent_id=None, node_id=0):
 
 def explain_node_type(node_type):
     explanations = {
+        'Append': 'Appends the results of multiple scans or subqueries.',
         'Bitmap Heap Scan': 'Reads data from a table using a bitmap and retrieves matching rows.',
         'Bitmap Index Scan': 'Uses a bitmap to find matching rows in an index.',
         'BitmapOr': 'Performs a logical OR operation on the results of multiple bitmap scans.',
-        # Add more explanations for other node types as needed
+        'Custom Scan': 'Performs a custom scan using a custom access method.',
+        'Foreign Scan': 'Scans a foreign table using a foreign data wrapper.',
+        'Function Scan': 'Generates rows by calling a set-returning function.',
+        'Gather': 'Collects rows from multiple worker processes in parallel.',
+        'Gather Merge': 'Merges rows collected from multiple worker processes in parallel.',
+        'Hash': 'Builds a hash table for hash-based operations.',
+        'Hash Join': 'Joins two tables using a hash function to distribute rows across buckets.',
+        'Index Only Scan': 'Retrieves data directly from an index without visiting the table.',
+        'Index Scan': 'Reads rows from a table using an index.',
+        'Limit': 'Limits the number of rows returned by a subplan.',
+        'LockRows': 'Acquires a row-level lock on rows returned by a subplan.',
+        'Materialize': 'Materializes the results of a subquery.',
+        'Merge Append': 'Merges the results of multiple scans or subqueries.',
+        'Merge Join': 'Joins two pre-sorted tables by merging their sorted rows.',
+        'Nested Loop': 'Joins two tables by nested loop iteration over the outer and inner tables.',
+        'Recursive Union': 'Performs a recursive union of multiple scans or subqueries.',
+        'Seq Scan': 'Sequentially scans a table, reading all rows in the table.',
+        'SetOp': 'Performs a set operation (UNION, INTERSECT, or EXCEPT) on the results of multiple scans or subqueries.',
+        'Subquery Scan': 'Executes a subquery and treats its result as a table.',
+        'Table Function Scan': 'Generates rows by calling a table function.',
+        'Tid Scan': 'Scans a table using tuple ID (TID) values.',
+        'Values Scan': 'Generates rows from a set of specified values.',
+        'WorkTable Scan': 'Reads rows from a materialized or temporary work table.',
     }
-    return explanations.get(node_type, f'There is no join available in this step for explanation.')
+    return explanations.get(node_type, f'There is no explanation available for this node type: {node_type}.')
 
 def explain_join_type(join_type):
     explanations = {
-        'Nested Loop': 'Joins two tables by nested loop iteration over the outer and inner tables.',
         'Hash Join': 'Joins two tables using a hash function to distribute rows across buckets.',
+        'Hash Semi Join': 'Returns only the rows from the inner table that have matching rows in the outer table.',
+        'Hash Anti Join': 'Returns only the rows from the inner table that have no matching rows in the outer table.',
         'Merge Join': 'Joins two pre-sorted tables by merging their sorted rows.',
-        # Add more explanations for other join types as needed
+        'Merge Semi Join': 'Returns only the rows from the inner table that have matching rows in the outer table.',
+        'Merge Anti Join': 'Returns only the rows from the inner table that have no matching rows in the outer table.',
+        'Nested Loop': 'Joins two tables by nested loop iteration over the outer and inner tables.',
+        'Nested Loop Semi Join': 'Returns only the rows from the inner table that have matching rows in the outer table.',
+        'Nested Loop Anti Join': 'Returns only the rows from the outer table that have no matching rows in the inner table.',
+        'Bitmap Index Scan': 'Uses a bitmap to find matching rows in an index.',
+        'Bitmap Heap Scan': 'Reads data from a table using a bitmap and retrieves matching rows.',
+        'BitmapOr': 'Performs a logical OR operation on the results of multiple bitmap scans.',
+        'Tid Scan': 'Scans a table using tuple ID (TID) values.',
     }
-    return explanations.get(join_type, f'There is no join available in this step for explanation.')
+    return explanations.get(join_type, f'There is no explanation available for this join type: {join_type}.')
+
+
 
 def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     """
