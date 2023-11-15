@@ -7,7 +7,7 @@ window = tk.Tk()
 window.title("SQL Query Executor")
 
 # Set the window size to cover the entire screen
-window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}+0+0")
+window.geometry("1500x1000")
 
 # Create a top canvas for title, entry field, and button
 top_canvas = tk.Canvas(window)
@@ -57,7 +57,7 @@ def execute_sql_query():
 
         # Create a legend canvas
         legend_canvas_height = len(legend_items) * 40 + 10  # Adjust the height based on the number of items
-        legend_canvas = tk.Canvas(left_canvas, width=300, height=legend_canvas_height)
+        legend_canvas = tk.Canvas(left_canvas, width=700, height=legend_canvas_height)
         legend_canvas.pack(pady=10)
 
         # Create legend items with font
