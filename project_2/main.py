@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from test import connection_to_db, get_qep_image, get_qep_statements
+from test import connect_to_db, get_qep_image, close_db_connection, get_qep_statements
 
 # Create the main window
 window = tk.Tk()
@@ -27,14 +27,12 @@ def execute_sql_query():
     query = sql_entry.get()
 
     try:
-        connection, cursor = connection_to_db()
-        cursor.execute(query)
+        connect_to_db()
 
         # Fetch the QEP image
-        qep_digraph = get_qep_image(cursor, query)
-        statements = get_qep_statements(cursor, query)
-        cursor.close()
-        connection.close()
+        qep_digraph = get_qep_image(query)
+        statements = get_qep_statements(query)
+        close_db_connection()
 
         # Save the QEP digraph as a PNG file
         qep_digraph.format = 'png'
