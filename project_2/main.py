@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from test import connect_to_db, get_qep_image, close_db_connection, get_qep_statements
+from test import connect_to_db, get_block_size, get_buffer_size, get_qep_image, close_db_connection, get_qep_statements
 
 # Create the main window
 window = tk.Tk()
@@ -32,6 +32,8 @@ def execute_sql_query():
         # Fetch the QEP image
         qep_digraph = get_qep_image(query)
         statements = get_qep_statements(query)
+        buffer_size = get_buffer_size()
+        blk_size = get_block_size()
         close_db_connection()
 
         # Save the QEP digraph as a PNG file
@@ -49,6 +51,9 @@ def execute_sql_query():
 
         qep_label.config(image=qep_image)
         qep_label.image = qep_image
+
+        left_canvas.create_text(250, 620, anchor=tk.W, text=f"Buffer Size: {buffer_size}")
+        left_canvas.create_text(250, 640, anchor=tk.W, text=f"Block Size: {blk_size} bytes")
 
         # Update the statements in the right canvas
         analysis_output_label.config(text='\n'.join(statements))

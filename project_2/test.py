@@ -62,6 +62,14 @@ def get_qep_statements(query):
     else:
         return None
 
+def get_buffer_size():
+    cursor.execute("show shared_buffers")
+    return cursor.fetchone()[0]
+
+def get_block_size():
+    cursor.execute("show block_size")
+    return cursor.fetchone()[0]
+
 def add_nodes(dot, plan, parent_id=None, node_id=0):
     if "Node Type" in plan:
         # Extract information from the JSON data
