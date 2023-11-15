@@ -1,2 +1,5 @@
 *.exe
 *.tbl
+*.pyc
+*.png
+qep_tree

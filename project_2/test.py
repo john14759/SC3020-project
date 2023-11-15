@@ -2,16 +2,17 @@ import psycopg2
 import graphviz
 from graphviz import Digraph
 
-def connection_to_db():    
+def connect_to_db():    
     try:
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "voidbeast1"
+        password = "postgres"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 
         # Create a connection to the database
+        global connection
         connection = psycopg2.connect(
             dbname=dbname,
             user=user,
@@ -21,16 +22,19 @@ def connection_to_db():
         )
 
         # Create a cursor
+        global cursor
         cursor = connection.cursor()
 
         # Now, you have a working database connection and a cursor for executing SQL queries.
 
-        return connection, cursor
-
     except psycopg2.Error as e:
         print(f"Error connecting to the database: {e}")
 
-def get_qep_image(cursor, query):
+def close_db_connection():
+    cursor.close()
+    connection.close()
+
+def get_qep_image(query):
     explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
     cursor.execute(explain_query)
     qep_json = cursor.fetchone()[0][0]
@@ -45,7 +49,7 @@ def get_qep_image(cursor, query):
     else:
         return None
     
-def get_qep_statements(cursor, query):
+def get_qep_statements(query):
     explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
     cursor.execute(explain_query)
     qep_json = cursor.fetchone()[0][0]
@@ -57,6 +61,14 @@ def get_qep_statements(cursor, query):
         return statements
     else:
         return None
+
+def get_buffer_size():
+    cursor.execute("show shared_buffers")
+    return cursor.fetchone()[0]
+
+def get_block_size():
+    cursor.execute("show block_size")
+    return cursor.fetchone()[0]
 
 def add_nodes(dot, plan, parent_id=None, node_id=0):
     if "Node Type" in plan:
