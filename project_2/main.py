@@ -9,7 +9,7 @@ window = tk.Tk()
 window.title("SQL Query Executor")
 
 # Set the window size to cover the entire screen
-window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
+window.geometry("1500x1000")
 
 # Create a top canvas for title, entry field, and button
 top_canvas = tk.Canvas(window)
@@ -98,7 +98,8 @@ def execute_sql_query():
                 result_label.config(text="Error: Invalid query. Please check your SQL syntax.")
                 return
 
-            statements = get_qep_statements(query)
+            statements = get_qep_statements()
+            print(statements)
             buffer_size = get_buffer_size()
             blk_size = get_block_size()
             
