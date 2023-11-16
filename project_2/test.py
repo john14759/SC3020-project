@@ -158,10 +158,30 @@ def explain_join_type(join_type):
         'Bitmap Heap Scan': 'Reads data from a table using a bitmap and retrieves matching rows.',
         'BitmapOr': 'Performs a logical OR operation on the results of multiple bitmap scans.',
         'Tid Scan': 'Scans a table using tuple ID (TID) values.',
+        'Inner': 'Returns only the rows that have matching rows in both the inner and outer tables.',
     }
     return explanations.get(join_type, f'There is no explanation available for this join type: {join_type}.')
 
+def extract_relations_for_join(plans):
+    """
+    Extracts the relation names from child plans.
 
+    Args:
+    - plans (list): The child plans of the join.
+
+    Returns:
+    Tuple[str, str]: A tuple containing the names of the left and right relation.
+    """
+    left_relation = None
+    right_relation = None
+    for child_plan in plans:
+        if 'Relation Name' in child_plan:
+            if left_relation is None:
+                left_relation = child_plan['Relation Name']
+            else:
+                right_relation = child_plan['Relation Name']
+                break  # Stop after finding two relations
+    return left_relation, right_relation
 
 def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     """
@@ -194,18 +214,58 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     join_type = qep.get('Join Type', 'NULL')
     relation_name = qep.get('Relation Name', 'NULL')
     index_name = qep.get('Index Name', 'NULL')
+    hash_condition = qep.get('Hash Cond', 'NULL')
 
     statement = (
         f"{indent_str}Step {step}:\n"
-        f"{indent_str}  ({node_type}) {explain_node_type(node_type)}\n"
-        f"{indent_str}  ({join_type}) {explain_join_type(join_type)}\n"
-        f"{indent_str}  Relation Name: {relation_name}\n"
-        f"{indent_str}  Index Name: {index_name}\n\n"
     )
 
+    # Add explanation for relation and index usage
+    if relation_name != 'NULL':
+        statement += f"{indent_str}  A sequential scan is performed on the relation {relation_name}.\n"
+    if index_name != 'NULL':
+        statement += f"{indent_str}  An index scan is performed using the index {index_name}.\n"
+
+    # Add explanation for node type
+    statement += f"{indent_str}  ({node_type}) {explain_node_type(node_type)}\n"
+
+    # Add explanation for joins if applicable
+    if join_type != 'NULL':
+        statement += f"{indent_str}  ({join_type}) {explain_join_type(join_type)}\n"
+        left_relation, right_relation = extract_relations_for_join(plans)
+        if left_relation and right_relation:
+            statement += f"{indent_str}  {left_relation} is {join_type.lower().replace('_', ' ')} with {right_relation}.\n"
+
+    # Add more detailed explanation for hash and hash join
+    if 'Hash' in node_type:
+        if 'Plans' in qep:
+            for child_plan in reversed(qep['Plans']):
+                if 'Seq Scan' in child_plan.get('Node Type', ''):
+                    child_relation = child_plan.get('Relation Name', 'NULL')
+                    statement += f"{indent_str}  Hash the results of sequential scan on relation {child_relation}.\n"
+
+        if 'Hash Join' in node_type:
+            if 'Plans' in qep:
+                for child_plan in reversed(qep['Plans']):
+                    if 'Seq Scan' in child_plan.get('Node Type', ''):
+                        child_relation = child_plan.get('Relation Name', 'NULL')
+                        statement += f"{indent_str}  Join hashed results with sequential scan on relation {child_relation}.\n"
+
+    if 'Nested Loop' in node_type or 'Merge Join' in node_type:
+        left_relation, right_relation = extract_relations_for_join(plans)
+        if left_relation and right_relation:
+            # Construct a statement that describes the join operation
+            join_method = "merge join" if 'Merge Join' in node_type else "nested loop join"
+            statement += f"{indent_str}  {left_relation} is joined with {right_relation} using {join_method}.\n"
+
+    # Add a newline for better readability
+    statement += "\n"
+
+    # Append the statement to the list
     statements.append(statement)
 
     return step + 1, statements
+
 
 
 
