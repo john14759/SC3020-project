@@ -7,7 +7,7 @@ def connect_to_db():
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "voidbeast1"
+        password = "postgres"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 
@@ -38,6 +38,7 @@ def get_qep_image(query):
     try:
         explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
         cursor.execute(explain_query)
+        global qep_json
         qep_json = cursor.fetchone()[0][0]
         print(qep_json)
         analyze_qep(qep_json['Plan'])
@@ -55,22 +56,15 @@ def get_qep_image(query):
         # Handle exceptions, and return an informative message
         return [f"Error analyzing the query: {str(e)}"]
     
-def get_qep_statements(query):
-    try:
-        explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
-        cursor.execute(explain_query)
-        qep_json = cursor.fetchone()[0][0]
-        statements = []
+def get_qep_statements():
+    statements = []
+    # Check if the QEP image is available in the JSON
+    if "Plan" in qep_json:
+        _, statements = analyze_qep(qep_json["Plan"], statements=statements)
+        return statements
+    else:
+        return None
 
-        # Check if the QEP image is available in the JSON
-        if "Plan" in qep_json:
-            _, statements = analyze_qep(qep_json["Plan"], statements=statements)
-            return statements
-        else:
-            return None
-    except Exception as e:
-        # Handle exceptions, and return an informative message
-        return [f"Error analyzing the query: {str(e)}"]
 
 def get_buffer_size():
     cursor.execute("show shared_buffers")
