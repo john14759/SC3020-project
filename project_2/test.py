@@ -140,6 +140,9 @@ def explain_node_type(node_type):
         'Tid Scan': 'Scans a table using tuple ID (TID) values.',
         'Values Scan': 'Generates rows from a set of specified values.',
         'WorkTable Scan': 'Reads rows from a materialized or temporary work table.',
+        'Unique': 'Removes duplicate data',
+        'Sort': 'Sort and return rows',
+        'CTE Scan': 'Runs part of a query and stores the output so that it can be used by other part(s) of the query',
     }
     return explanations.get(node_type, f'There is no explanation available for this node type: {node_type}.')
 
