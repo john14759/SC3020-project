@@ -99,7 +99,6 @@ def execute_sql_query():
                 return
 
             statements = get_qep_statements()
-            print(statements)
             buffer_size = get_buffer_size()
             blk_size = get_block_size()
             
@@ -125,7 +124,9 @@ def execute_sql_query():
             # Update the statements in the right frame
             analysis_output_label.config(text='\n'.join(statements), font=("Helvetica", 10))
             analysis_output_label.pack(side="top", fill="both", expand=True)
-
+            for i, statement in enumerate(statements):
+                button = tk.Button(right_frame, text=f"Step {i+1} Details", command=lambda s=statement: view_statement_details(s))
+                button.pack()
             create_legend()
 
         except Exception as e:
@@ -137,6 +138,12 @@ def execute_sql_query():
     # Create a thread to execute the query
     query_thread = Thread(target=execute_query_thread)
     query_thread.start()
+
+def view_statement_details(statement):
+    new_window = tk.Toplevel(window)
+    new_window.title("Details")
+    label = tk.Label(new_window, text=statement, font=("Helvetica", 12))
+    label.pack(padx=20, pady=20)
 
 # Create a button to execute the SQL query in the top canvas
 execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
