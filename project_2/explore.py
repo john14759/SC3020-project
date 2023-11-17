@@ -7,7 +7,7 @@ def connect_to_db():
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "ldzpostgresql"
+        password = "voidbeast1"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 
@@ -82,9 +82,10 @@ def add_nodes(dot, plan, parent_id=None, node_id=0):
         relation_name = plan.get('Relation Name', 'N/A')
         index_name = plan.get('Index Name', 'N/A')
         shared_hit_blocks = plan.get('Shared Hit Blocks', 'N/A')
+        shared_read_blocks = plan.get('Shared Read Blocks', 'N/A')
 
         # Construct the label with relevant information
-        label = f"{node_type}\nRelation Name: {relation_name}\nIndex Name: {index_name}\nStartup Cost: {startup_cost}\nTotal Cost: {total_cost}\nShared Hit Blocks: {shared_hit_blocks}"
+        label = f"{node_type}\nRelation Name: {relation_name}\nIndex Name: {index_name}\nStartup Cost: {startup_cost}\nTotal Cost: {total_cost}\nShared Hit Blocks: {shared_hit_blocks}\nShared Read Blocks: {shared_read_blocks}"
         
         # Define a unique identifier for the node
         node_name = f"node{node_id}"

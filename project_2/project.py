@@ -124,9 +124,9 @@ analysis_output_label.place()
 # Legend items
 legend_items = [
     {"text": "Start-up cost: Estimated units to start up a node to start a query"},
-    {"text": "Total cost: Estimated units to finish processing and return results."},
-    {"text": "Shared Hit Blocks: Number of shared blocks read into cache"},
-    {"text": "Local Hit Blocks: Number of local blocks read into cache"},
+    {"text": "Total cost: Estimated units to finish processing and return results"},
+    {"text": "Shared Hit Blocks: Number of shared blocks read from buffer"},
+    {"text": "Local Read Blocks: Number of local blocks read into buffer"}
 ]
 
 # Create a label to display the QEP image in the left canvas
