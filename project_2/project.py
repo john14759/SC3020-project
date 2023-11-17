@@ -134,3 +134,14 @@ result_label.place()
 
 # Start the mainloop
 window.mainloop()
+
+# Create a label to display the QEP image in the left canvas
+qep_label = tk.Label(left_frame, font=("Helvetica", 12))
+qep_label.place()
+
+# Create a label to display the result in the left canvas
+result_label = tk.Label(left_frame, text="", font=("Helvetica", 12))
+result_label.place()
+
+# Start the mainloop
+window.mainloop()
