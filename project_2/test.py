@@ -243,6 +243,7 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
     # Add more detailed explanation for hash and hash join
     if 'Hash' in node_type:
         hashed_relation_name, other_relation_name = None, None
+        qep["relation_name"] = qep["Plans"][0]["Relation Name"]
         if 'Hash Join' in node_type:
             # Extract the hashed and other relation names
             hashed_relation_name, other_relation_name = extract_hashed_relation(qep)
