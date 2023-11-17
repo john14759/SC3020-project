@@ -284,7 +284,7 @@ left_canvas, left_frame = create_scrollable_canvas(window, side=tk.LEFT, min_wid
 right_canvas, right_frame = create_scrollable_canvas(window, side=tk.RIGHT, min_width=400)
 
 # Create a label to display the QEP analysis output in the right canvas
-analysis_output_label = tk.Label(right_frame, text="", font=("Helvetica", 12), justify=tk.LEFT)
+analysis_output_label = tk.Label(right_frame, text="", font=("Helvetica", 12), justify=tk.LEFT, wraplength=550)
 analysis_output_label.place()
 
 # Legend items

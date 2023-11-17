@@ -225,9 +225,9 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
     )
 
     # Add explanation for relation and index usage
-    if relation_name != 'NULL':
+    if node_type == 'Seq Scan' and relation_name != 'NULL':
         statement += f"{indent_str}  A sequential scan is performed on the relation {relation_name}.\n"
-    if index_name != 'NULL':
+    elif (node_type == 'Index Scan' or node_type == 'Index Only Scan') and index_name != 'NULL':
         statement += f"{indent_str}  An index scan is performed using the index {index_name}.\n"
 
     # Add explanation for node type
@@ -244,7 +244,7 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
     if 'Hash' in node_type:
         hashed_relation_name, other_relation_name = None, None
         qep["relation_name"] = qep["Plans"][0]["Relation Name"]
-        if 'Hash Join' in node_type:
+        if 'Hash Join' in node_type or 'Index Only Scan' in node_type:
             # Extract the hashed and other relation names
             hashed_relation_name, other_relation_name = extract_hashed_relation(qep)
 
