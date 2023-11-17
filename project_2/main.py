@@ -242,6 +242,7 @@ def hash_visualisation(details_window, detail):
     num_rows = str(detail["Actual Rows"])
     tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20)).pack(pady=5)
     tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) of {relation_name} hashed into buckets", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"A hash table with hash attribute to bucket mapping is stored in the buffer", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
@@ -254,7 +255,7 @@ def hash_join_visualisation(details_window, detail):
     outer_set = detail["outer_set"]
     outer_set_rows = detail["Actual Rows"]
     tk.Label(details_window, text=f"Buckets of {inner_set} data blocks as the inner set", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into memory as the outer set", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into the buffer as the outer set", font=("Helvetica", 20)).pack(pady=5)
     tk.Label(details_window, text=f"For each tuple in the outer set, the hash table is probed for the matching bucket. Then the outer set tuple joins with each tuple in the bucket", font=("Helvetica", 20)).pack(pady=5)
 
 # Create a button to execute the SQL query in the top canvas
