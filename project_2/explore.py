@@ -7,7 +7,7 @@ def connect_to_db():
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "voidbeast1"
+        password = "ldzpostgresql"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 

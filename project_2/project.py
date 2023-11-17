@@ -95,7 +95,7 @@ window = tk.Tk()
 window.title("SQL Query Executor")
 
 # Set the window size to cover the entire screen
-window.geometry(f"{int(4/5*window.winfo_screenwidth())}x{window.winfo_screenheight()}")
+window.geometry(f"{int(4.5/5*window.winfo_screenwidth())}x{window.winfo_screenheight()}")
 
 # Create a top canvas for title, entry field, and button
 top_canvas = tk.Canvas(window)

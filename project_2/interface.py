@@ -66,7 +66,16 @@ def create_scrollable_canvas(parent, side=tk.LEFT, padx=10, pady=10, min_width=4
         canvas.move(canvas_frame, event.width/2 - canvas.coords(canvas_frame)[0], 0)
         canvas.config(scrollregion=canvas.bbox("all"))
 
-    canvas.bind("<Configure>", on_canvas_configure)
+    # Function to handle mouse scroll
+    def _on_mousewheel(event):
+        canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+
+    # Binding mouse scroll events to this specific canvas
+    canvas.bind("<MouseWheel>", _on_mousewheel)  # for Windows and MacOS
+
+    canvas.bind("<Enter>", lambda _: canvas.bind_all("<MouseWheel>", _on_mousewheel))  # Re-bind when entering canvas
+    canvas.bind("<Leave>", lambda _: canvas.unbind_all("<MouseWheel>"))  # Unbind when leaving canvas
+    
     return canvas, frame
 
 def resize_image(image_path, max_size):
