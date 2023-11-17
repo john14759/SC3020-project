@@ -70,14 +70,23 @@ def create_legend():
 
 # Function to create scrollable canvas
 def create_scrollable_canvas(parent, side=tk.LEFT, padx=10, pady=10, min_width=400):
-    canvas = tk.Canvas(parent, width=min_width)
-    scrollbar = tk.Scrollbar(parent, orient="vertical", command=canvas.yview)
-    canvas.configure(yscrollcommand=scrollbar.set)
-    canvas.pack(side=side, fill="both", expand=True, padx=padx, pady=pady)
-    scrollbar.pack(side="right", fill="y")
-    frame = tk.Frame(canvas, width=min_width)
+    # Create a frame to contain the canvas and scrollbar
+    container = tk.Frame(parent)
+    container.pack(side=side, fill="both", expand=True, padx=padx, pady=pady)
 
-    canvas_frame = canvas.create_window((min_width/2, 0), window=frame, anchor='center')
+    # Create the canvas inside the container
+    canvas = tk.Canvas(container, width=min_width)
+    canvas.pack(side=tk.LEFT, fill="both", expand=True)
+
+    # Create the scrollbar inside the container
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollbar.pack(side="right", fill="y")
+
+    # Configure the canvas
+    canvas.configure(yscrollcommand=scrollbar.set)
+    frame = tk.Frame(canvas, width=min_width)
+    canvas_frame = canvas.create_window((min_width/2, 0), window=frame, anchor='nw')
+
     frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
     def on_canvas_configure(event):
@@ -166,8 +175,7 @@ def resize_image(image_path, max_size):
 
     ratio = min(max_size[0] / original_size[0], max_size[1] / original_size[1])
     new_size = tuple([int(x * ratio) for x in original_size])
-
-    # Use Image.Resampling.LANCZOS for high-quality downsampling
+    
     resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
     return resized_image
 
@@ -218,6 +226,12 @@ def view_statement_details(detail):
         case "Nested Loop": nested_loop_visualisation(details_window, detail)
         case _ : tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20)).pack(padx=10, pady=10)
 
+def resize_image_aspect_ratio(image, max_size):
+    original_size = image.size
+    ratio = min(max_size[0] / original_size[0], max_size[1] / original_size[1])
+    new_size = tuple([int(x * ratio) for x in original_size])
+    return image.resize(new_size, Image.Resampling.LANCZOS)
+
 def seq_scan_visualisation(details_window, detail):
     label = tk.Label(details_window)
     label.config(image=seq_scan_im)
@@ -234,12 +248,11 @@ def hash_visualisation(details_window, detail):
     label.config(image=hash_im)
     label.image= hash_im
     label.pack(padx=10, pady=10)
-    relation_name = detail["relation_name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_buckets = str(detail["Hash Buckets"])
     num_rows = str(detail["Actual Rows"])
     tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) of {relation_name} hashed into buckets", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) hashed into buckets", font=("Helvetica", 20)).pack(pady=5)
     tk.Label(details_window, text=f"A hash table with hash attribute to bucket mapping is stored in the buffer", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
@@ -280,7 +293,7 @@ def nested_loop_visualisation(details_window, detail):
 
 
 # Create a button to execute the SQL query in the top canvas
-execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
+execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 12))
 execute_button.pack(pady=10)
 
 # Create scrollable left and right canvases
@@ -288,7 +301,7 @@ left_canvas, left_frame = create_scrollable_canvas(window, side=tk.LEFT, min_wid
 right_canvas, right_frame = create_scrollable_canvas(window, side=tk.RIGHT, min_width=400)
 
 # Create a label to display the QEP analysis output in the right canvas
-analysis_output_label = tk.Label(right_frame, text="", font=("Helvetica", 12), justify=tk.LEFT)
+analysis_output_label = tk.Label(right_frame, text="", font=("Helvetica", 12), justify=tk.LEFT, wraplength=550)
 analysis_output_label.place()
 
 # Legend items

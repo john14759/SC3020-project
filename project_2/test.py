@@ -225,9 +225,9 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
     )
 
     # Add explanation for relation and index usage
-    if relation_name != 'NULL':
+    if node_type == 'Seq Scan' and relation_name != 'NULL':
         statement += f"{indent_str}  A sequential scan is performed on the relation {relation_name}.\n"
-    if index_name != 'NULL':
+    elif (node_type == 'Index Scan' or node_type == 'Index Only Scan') and index_name != 'NULL':
         statement += f"{indent_str}  An index scan is performed using the index {index_name}.\n"
 
     # Add explanation for node type
@@ -240,20 +240,22 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
         if left_relation and right_relation:
             statement += f"{indent_str}  {left_relation} is {join_type.lower().replace('_', ' ')} with {right_relation}.\n"
 
-    # Add more detailed explanation for hash and hash join
     if 'Hash' in node_type:
-        hashed_relation_name, other_relation_name = None, None
-        qep["relation_name"] = qep["Plans"][0]["Relation Name"]
+        hashed_relation_name, hashed_node_type, other_relation_name, other_node_type = None, None, None, None
         if 'Hash Join' in node_type:
-            # Extract the hashed and other relation names
-            hashed_relation_name, other_relation_name = extract_hashed_relation(qep)
+            hashed_relation_name, hashed_node_type, other_relation_name, other_node_type = extract_hashed_relation(qep)
             qep["inner_set"] = hashed_relation_name
             qep["outer_set"] = other_relation_name
-            # Now we can use hashed_relation_name and other_relation_name in our statements
+            # Statement for the hashed relation
             if hashed_relation_name:
-                statement += f"{indent_str}  Hash the results of sequential scan on relation {hashed_relation_name}.\n"
+                hash_scan_type_text = "index only scan" if hashed_node_type == 'Index Only Scan' else "sequential scan"
+                statement += f"{indent_str}  Hash the results of {hash_scan_type_text} on relation {hashed_relation_name}.\n"
+        
+            # Statement for the other relation
             if other_relation_name:
-                statement += f"{indent_str}  Join hashed results with sequential scan on relation {other_relation_name}.\n"
+                other_scan_type_text = "index only scan" if other_node_type == 'Index Only Scan' else "sequential scan"
+                statement += f"{indent_str}  Join hashed results with {other_scan_type_text} on relation {other_relation_name}.\n"
+        
             if hashed_relation_name and other_relation_name:
                 statement += f"{indent_str}  Hash Join condition is {hash_condition}.\n"
 
@@ -302,33 +304,26 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
     return step + 1, statements, details
 
 def extract_hashed_relation(qep):
-    # Assume the QEP node passed here is the 'Hash Join' node
     hash_cond = qep.get('Hash Cond', '')
-    
+
     hashed_relation_name = None
     other_relation_name = None
-    hash_plan_node = None
-    seq_scan_relation_name = None
-    
-    # Iterate over the child plans of the hash join node
+    hashed_node_type = None
+    other_node_type = None
+
     for child_plan in qep['Plans']:
         if child_plan['Node Type'] == 'Hash':
-            hash_plan_node = child_plan
-            # The relation being hashed is typically the one being sequentially scanned within this Hash node
-            if 'Plans' in child_plan and child_plan['Plans'][0]['Node Type'] == 'Seq Scan':
-                hashed_relation_name = child_plan['Plans'][0]['Relation Name']
-        elif child_plan['Node Type'] == 'Seq Scan':
-            seq_scan_relation_name = child_plan['Relation Name']
-    
-    if hashed_relation_name and seq_scan_relation_name:
-        other_relation_name = seq_scan_relation_name
-    elif hash_plan_node and not hashed_relation_name:
-        # This case handles if there's a hash node but no sequential scan within it
-        # You may need to check for index scans or other node types depending on your specific QEP structure
-        # and update logic accordingly
-        other_relation_name = 'UNKNOWN'
-    
-    return hashed_relation_name, other_relation_name
+            if 'Plans' in child_plan and len(child_plan['Plans']) > 0:
+                hash_child_plan = child_plan['Plans'][0]
+                hashed_relation_name = hash_child_plan.get('Relation Name', None)
+                hashed_node_type = hash_child_plan.get('Node Type', None)
+        else:
+            other_relation_name = child_plan.get('Relation Name', None)
+            other_node_type = child_plan.get('Node Type', None)
+
+    return hashed_relation_name, hashed_node_type, other_relation_name, other_node_type
+
+
 
 
 
