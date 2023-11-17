@@ -3,13 +3,14 @@ from PIL import Image, ImageTk
 from test import connect_to_db, get_block_size, get_buffer_size, get_qep_image, close_db_connection, get_qep_statements
 from tkinter import Tk, Label
 from threading import Thread
+import requests
 
 # Create the main window
 window = tk.Tk()
 window.title("SQL Query Executor")
 
 # Set the window size to cover the entire screen
-window.geometry(f"{window.winfo_screenwidth()}x{window.winfo_screenheight()}")
+window.geometry(f"{int(4/5*window.winfo_screenwidth())}x{window.winfo_screenheight()}")
 
 # Create a top canvas for title, entry field, and button
 top_canvas = tk.Canvas(window)
@@ -98,7 +99,7 @@ def execute_sql_query():
                 result_label.config(text="Error: Invalid query. Please check your SQL syntax.")
                 return
 
-            statements = get_qep_statements(query)
+            statements, details = get_qep_statements()
             buffer_size = get_buffer_size()
             blk_size = get_block_size()
             
@@ -124,7 +125,12 @@ def execute_sql_query():
             # Update the statements in the right frame
             analysis_output_label.config(text='\n'.join(statements), font=("Helvetica", 10))
             analysis_output_label.pack(side="top", fill="both", expand=True)
-
+            for widget in right_frame.winfo_children():
+                if (isinstance(widget, tk.Button)):
+                    widget.destroy()
+            for i, detail in enumerate(details):
+                button = tk.Button(right_frame, text=f"Step {i+1} Details", command=lambda s=detail: view_statement_details(s))
+                button.pack()
             create_legend()
 
         except Exception as e:
@@ -136,6 +142,57 @@ def execute_sql_query():
     # Create a thread to execute the query
     query_thread = Thread(target=execute_query_thread)
     query_thread.start()
+
+def view_statement_details(detail):
+    details_window = tk.Toplevel(window)
+    details_window.title("Details")
+    match detail["Node Type"]:
+        case "Seq Scan": seq_scan_visualisation(details_window, detail)
+        case "Hash": hash_visualisation(details_window, detail)
+        case "Hash Join": hash_join_visualisation(details_window, detail)
+        case _ : 
+            label = tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20))
+            label.pack(padx=10, pady=10)
+
+def seq_scan_visualisation(details_window, detail):
+    im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
+    im = ImageTk.PhotoImage(im)
+    label = tk.Label(details_window)
+    label.config(image=im)
+    label.image= im
+    label.pack(padx=10, pady=10)
+    relation_name = detail["Relation Name"]
+    blks_hit = str(detail["Shared Hit Blocks"])
+    num_rows = str(detail["Actual Rows"])
+    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 20))
+    num_blks_label.pack(pady=10)
+    num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 20))
+    num_rows_label.pack(pady=5)
+
+def hash_visualisation(details_window, detail):
+    im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
+    im = ImageTk.PhotoImage(im)
+    label = tk.Label(details_window)
+    label.config(image=im)
+    label.image= im
+    label.pack(padx=10, pady=10)
+    relation_name = detail["relation_name"]
+    blks_hit = str(detail["Shared Hit Blocks"])
+    num_buckets = str(detail["Hash Buckets"])
+    num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20))
+    num_buckets_label.pack(pady=10)
+    num_blks_label = tk.Label(details_window, text=f"{blks_hit} data blocks of {relation_name} hashed into buckets", font=("Helvetica", 20))
+    num_blks_label.pack(pady=5)
+
+def hash_join_visualisation(details_window, detail):
+    im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
+    im = ImageTk.PhotoImage(im)
+    label = tk.Label(details_window)
+    label.config(image=im)
+    label.image= im
+    label.pack(padx=10, pady=10)
+    print(detail)
+    print("/n")
 
 # Create a button to execute the SQL query in the top canvas
 execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
