@@ -7,7 +7,7 @@ def connect_to_db():
         # Define the connection parameters
         dbname = "TPC-H"
         user = "postgres"
-        password = "voidbeast1"
+        password = "Anyaforger1!"
         host = "127.0.0.1"
         port = "5432"  # Default PostgreSQL port is 5432
 
@@ -143,6 +143,7 @@ def explain_node_type(node_type):
         'Unique': 'Removes duplicate data',
         'Sort': 'Sort and return rows',
         'CTE Scan': 'Runs part of a query and stores the output so that it can be used by other part(s) of the query',
+        'Aggregate': 'Perform a calculation on a set of values and return a single result, such as counting, summing, averaging, or finding the maximum or minimum value within a group of rows.',
     }
     return explanations.get(node_type, f'There is no explanation available for this node type: {node_type}.')
 
@@ -162,6 +163,10 @@ def explain_join_type(join_type):
         'BitmapOr': 'Performs a logical OR operation on the results of multiple bitmap scans.',
         'Tid Scan': 'Scans a table using tuple ID (TID) values.',
         'Inner': 'Returns only the rows that have matching rows in both the inner and outer tables.',
+        'Right': 'Retrieves all records from the right table and matching records from the left table.',
+        'Left': 'Retrieves all records from the left table and the matching records from the right table.',
+        'Full': 'Retrieves all records when there is a match in either the left or the right table.',
+        'Semi': 'Returns only the rows from the left table for which there is a match in the right table, it does not actually return the columns from the right table.'
     }
     return explanations.get(join_type, f'There is no explanation available for this join type: {join_type}.')
 
