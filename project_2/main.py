@@ -228,9 +228,9 @@ def seq_scan_visualisation(details_window, detail):
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_rows = str(detail["Actual Rows"])
-    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 20))
-    num_blks_label.pack(pady=10)
-    num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 20))
+    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 20))
+    num_blks_label.pack(pady=5)
+    num_rows_label = tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 20))
     num_rows_label.pack(pady=5)
 
 def hash_visualisation(details_window, detail):
@@ -243,9 +243,10 @@ def hash_visualisation(details_window, detail):
     relation_name = detail["relation_name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_buckets = str(detail["Hash Buckets"])
+    num_rows = str(detail["Actual Rows"])
     num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20))
-    num_buckets_label.pack(pady=10)
-    num_blks_label = tk.Label(details_window, text=f"{blks_hit} data blocks of {relation_name} hashed into buckets", font=("Helvetica", 20))
+    num_buckets_label.pack(pady=5)
+    num_blks_label = tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) of {relation_name} hashed into buckets", font=("Helvetica", 20))
     num_blks_label.pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
@@ -255,8 +256,12 @@ def hash_join_visualisation(details_window, detail):
     label.config(image=im)
     label.image= im
     label.pack(padx=10, pady=10)
-    print(detail)
-    print("/n")
+    inner_set = detail["inner_set"]
+    outer_set = detail["outer_set"]
+    outer_set_rows = detail["Actual Rows"]
+    tk.Label(details_window, text=f"Buckets of {inner_set} data blocks as the inner set", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into memory as the outer set", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"For each tuple in the outer set, the hash table is probed for the matching bucket. Then the outer set tuple joins with each tuple in the bucket", font=("Helvetica", 20)).pack(pady=5)
 
 # Create a button to execute the SQL query in the top canvas
 execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
