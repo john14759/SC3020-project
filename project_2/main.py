@@ -246,7 +246,7 @@ def seq_scan_visualisation(details_window, detail):
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_rows = str(detail["Actual Rows"])
-    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 10))
+    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 12))
     num_blks_label.pack(pady=10)
     num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 12))
     num_rows_label.pack(pady=5)
