@@ -25,8 +25,7 @@ def create_legend_items(canvas, items, x_start, y_start, y_gap, line_width, font
 
         y += y_gap
 
-def create_legend(left_frame, legend_items):
-    global create_legend_flag, legend_canvas
+def create_legend(left_frame, legend_items, create_legend_flag, legend_canvas):
 
     if not create_legend_flag:
         # Check if legend_canvas already exists, if not create it
@@ -133,7 +132,16 @@ def resize_image_aspect_ratio(image, max_size):
     new_size = tuple([int(x * ratio) for x in original_size])
     return image.resize(new_size, Image.Resampling.LANCZOS)
 
+def get_image(url):
+    response = requests.get(url, stream=True)
+    img = Image.open(response.raw)
+    return img
+
 def seq_scan_visualisation(details_window, detail):
+    original_image = get_image("https://postgrespro.com/media/2022/03/31/seqscan1-en.png")
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(original_image, (1000, 1000))
+    seq_scan_im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=seq_scan_im)
     label.image= seq_scan_im
@@ -141,10 +149,14 @@ def seq_scan_visualisation(details_window, detail):
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_rows = str(detail["Actual Rows"])
-    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 15)).pack(pady=5)
 
 def hash_visualisation(details_window, detail):
+    original_image = get_image("https://postgrespro.com/media/2019/05/23/i3.png")
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(original_image, (1000, 1000))
+    hash_im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=hash_im)
     label.image= hash_im
@@ -152,11 +164,15 @@ def hash_visualisation(details_window, detail):
     blks_hit = str(detail["Shared Hit Blocks"])
     num_buckets = str(detail["Hash Buckets"])
     num_rows = str(detail["Actual Rows"])
-    tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) hashed into buckets", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"A hash table with hash attribute to bucket mapping is stored in the buffer", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) hashed into buckets.", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"A hash table with hash attribute to bucket mapping is stored in the buffer.", font=("Helvetica", 15)).pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
+    original_image = get_image("https://postgrespro.com/media/2022/08/11/hash1-en.png")
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(original_image, (1000, 1000))
+    hash_join_im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=hash_join_im)
     label.image = hash_join_im
@@ -164,22 +180,30 @@ def hash_join_visualisation(details_window, detail):
     inner_set = detail["inner_set"]
     outer_set = detail["outer_set"]
     outer_set_rows = detail["Actual Rows"]
-    tk.Label(details_window, text=f"Buckets of {inner_set} data blocks as the inner set", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into the buffer as the outer set", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"For each tuple in the outer set, the hash table is probed for the matching bucket. Then the outer set tuple joins with each tuple in the bucket", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Buckets of {inner_set} data blocks as the inner set.", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into the buffer as the outer set.", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"For each tuple in the outer set, the hash table is probed for the matching bucket. Then the outer set tuple joins with each tuple in the bucket.", font=("Helvetica", 15)).pack(pady=5)
 
 def aggregate_visualisation(details_window, detail):
+    original_image = get_image("https://postgrespro.com/media/2022/03/31/seqscan1-en.png")
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(original_image, (1000, 1000))
+    aggregate_im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
-    label.config(image=seq_scan_im)
-    label.image = seq_scan_im
+    label.config(image=aggregate_im)
+    label.image = aggregate_im
     label.pack(padx=10, pady=10)
     num_output_rows = detail["Actual Rows"]
     num_rows_removed = detail["Rows Removed by Filter"]
     num_input_rows = num_output_rows + num_rows_removed
-    tk.Label(details_window, text=f"Number of input tuples: {num_input_rows}", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"Number of output tuples: {num_output_rows}", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of input tuples: {num_input_rows}", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of output tuples: {num_output_rows}", font=("Helvetica", 15)).pack(pady=5)
 
 def nested_loop_visualisation(details_window, detail):
+    original_image = get_image("http://www.interdb.jp/pg/img/fig-3-16.png")
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(original_image, (1000, 1000))
+    nested_loop_im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=nested_loop_im)
     label.image = nested_loop_im
@@ -188,19 +212,5 @@ def nested_loop_visualisation(details_window, detail):
     num_inner_rows = detail["inner_rows"]
     num_other_rows = detail["outer_rows"]
     num_loops = detail["Actual Loops"]
-    tk.Label(details_window, text=f"{num_inner_rows} inner tuple(s) join on {num_other_rows} outer tuple(s), output {num_output_rows} tuples", font=("Helvetica", 20)).pack(pady=5)
-    tk.Label(details_window, text=f"{num_loops} loop(s) required", font=("Helvetica", 20)).pack(pady=5)
-
-
-# Images for visualisation
-seq_scan_im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
-seq_scan_im = ImageTk.PhotoImage(seq_scan_im)
-
-hash_im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
-hash_im = ImageTk.PhotoImage(hash_im)
-
-hash_join_im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
-hash_join_im = ImageTk.PhotoImage(hash_join_im)
-
-nested_loop_im = Image.open(requests.get("http://www.interdb.jp/pg/img/fig-3-16.png", stream=True).raw)
-nested_loop_im = ImageTk.PhotoImage(nested_loop_im)
+    tk.Label(details_window, text=f"{num_inner_rows} inner tuple(s) join on {num_other_rows} outer tuple(s), output {num_output_rows} tuples.", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"{num_loops} loop(s) required.", font=("Helvetica", 15)).pack(pady=5)

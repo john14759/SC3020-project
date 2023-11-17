@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import Image, ImageTk
-from interface import create_scrollable_canvas, create_legend, resize_image, \
+from interface import create_scrollable_canvas, create_legend, resize_image,\
     open_fullsize_image, view_statement_details
 from explore import connect_to_db, get_block_size, get_buffer_size, get_qep_image, \
                  close_db_connection, get_qep_statements
@@ -15,10 +15,10 @@ click_instruction_label = None
 
 # Function to execute the SQL query
 def execute_sql_query():
-    global click_instruction_label
+    global click_instruction_label, create_legend_flag
     # Function to execute the SQL query in a separate thread
     def execute_query_thread():
-        global click_instruction_label
+        global click_instruction_label, create_legend_flag
         try:
             connect_to_db()
 
@@ -73,7 +73,12 @@ def execute_sql_query():
             for i, detail in enumerate(details):
                 button = tk.Button(right_frame, text=f"Step {i+1} Details", command=lambda s=detail: view_statement_details(window, s))
                 button.pack()
-            create_legend(left_frame, legend_items)
+            # Check if the legend has been created already
+            if not create_legend_flag:
+                # Call create_legend function
+                create_legend(left_frame, legend_items, create_legend_flag, legend_canvas)
+                # Set the flag to True to avoid recreating the legend
+                create_legend_flag = True
 
         except Exception as e:
             result_label.config(text=f"Error: {str(e)}")
@@ -123,17 +128,6 @@ legend_items = [
     {"text": "Shared Hit Blocks: Number of shared blocks read into cache"},
     {"text": "Local Hit Blocks: Number of local blocks read into cache"},
 ]
-
-# Create a label to display the QEP image in the left canvas
-qep_label = tk.Label(left_frame, font=("Helvetica", 12))
-qep_label.place()
-
-# Create a label to display the result in the left canvas
-result_label = tk.Label(left_frame, text="", font=("Helvetica", 12))
-result_label.place()
-
-# Start the mainloop
-window.mainloop()
 
 # Create a label to display the QEP image in the left canvas
 qep_label = tk.Label(left_frame, font=("Helvetica", 12))
