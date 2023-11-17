@@ -57,11 +57,10 @@ def get_qep_image(query):
         return [f"Error analyzing the query: {str(e)}"]
     
 def get_qep_statements():
-    statements = []
     # Check if the QEP image is available in the JSON
     if "Plan" in qep_json:
-        _, statements = analyze_qep(qep_json["Plan"], statements=statements)
-        return statements
+        _, statements, details = analyze_qep(qep_json["Plan"])
+        return statements, details
     else:
         return None
 
@@ -180,7 +179,7 @@ def extract_relations_for_join(plans):
                 break  # Stop after finding two relations
     return left_relation, right_relation
 
-def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
+def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, details=None):
     """
     Analyzes the Query Execution Plan (QEP) and prints a step-by-step analysis.
 
@@ -199,12 +198,15 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     # Initialize the statements list if not provided
     if statements is None:
         statements = []
+    
+    if details is None: 
+        details = []
 
     # Recursively analyze child nodes if they exist
     plans = qep.get('Plans', [])
     for i, plan in enumerate(reversed(plans), start=1):
         # Additional indentation for child nodes
-        step, statements = analyze_qep(plan, indent + 2, first_line_indent, step, statements)
+        step, statements, details = analyze_qep(plan, indent + 2, first_line_indent, step, statements, details)
 
     # Append details of the current node to the statements list
     node_type = qep.get('Node Type', 'NULL')
@@ -260,8 +262,9 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
 
     # Append the statement to the list
     statements.append(statement)
+    details.append(qep)
 
-    return step + 1, statements
+    return step + 1, statements, details
 
 
 
