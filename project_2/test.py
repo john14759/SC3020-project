@@ -286,7 +286,6 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
         if left_relation and right_relation:
             statement += f"{indent_str}  {left_relation} is joined with {right_relation} using {node_type}.\n"
 
-
     # Add a newline for better readability
     statement += "\n"
 
@@ -325,39 +324,6 @@ def extract_hashed_relation(qep):
     
     return hashed_relation_name, other_relation_name
 
-
-
-
-
-
-def extract_hashed_relation(qep):
-    # Assume the QEP node passed here is the 'Hash Join' node
-    hash_cond = qep.get('Hash Cond', '')
-    
-    hashed_relation_name = None
-    other_relation_name = None
-    hash_plan_node = None
-    seq_scan_relation_name = None
-    
-    # Iterate over the child plans of the hash join node
-    for child_plan in qep['Plans']:
-        if child_plan['Node Type'] == 'Hash':
-            hash_plan_node = child_plan
-            # The relation being hashed is typically the one being sequentially scanned within this Hash node
-            if 'Plans' in child_plan and child_plan['Plans'][0]['Node Type'] == 'Seq Scan':
-                hashed_relation_name = child_plan['Plans'][0]['Relation Name']
-        elif child_plan['Node Type'] == 'Seq Scan':
-            seq_scan_relation_name = child_plan['Relation Name']
-    
-    if hashed_relation_name and seq_scan_relation_name:
-        other_relation_name = seq_scan_relation_name
-    elif hash_plan_node and not hashed_relation_name:
-        # This case handles if there's a hash node but no sequential scan within it
-        # You may need to check for index scans or other node types depending on your specific QEP structure
-        # and update logic accordingly
-        other_relation_name = 'UNKNOWN'
-    
-    return hashed_relation_name, other_relation_name
 
 
 
