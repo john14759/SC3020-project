@@ -133,6 +133,7 @@ def view_statement_details(window, detail):
         case "Hash Join": hash_join_visualisation(details_window, detail)
         case "Aggregate": aggregate_visualisation(details_window, detail)
         case "Nested Loop": nested_loop_visualisation(details_window, detail)
+        case "Merge Join": merge_join_visualisation(details_window, detail)
         case _ : tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20)).pack(padx=10, pady=10)
 
 def resize_image_aspect_ratio(image, max_size):
@@ -157,8 +158,10 @@ def seq_scan_visualisation(details_window, detail):
     label.pack(padx=10, pady=10)
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
+    blks_read = str(detail["Shared Read Blocks"])
     num_rows = str(detail["Actual Rows"])
-    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_read}", font=("Helvetica", 15)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read from buffer: {blks_hit}", font=("Helvetica", 15)).pack(pady=5)
     tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 15)).pack(pady=5)
 
 def hash_visualisation(details_window, detail):
@@ -223,3 +226,13 @@ def nested_loop_visualisation(details_window, detail):
     num_loops = detail["Actual Loops"]
     tk.Label(details_window, text=f"{num_inner_rows} inner tuple(s) join on {num_other_rows} outer tuple(s), output {num_output_rows} tuples.", font=("Helvetica", 15)).pack(pady=5)
     tk.Label(details_window, text=f"{num_loops} loop(s) required.", font=("Helvetica", 15)).pack(pady=5)
+
+def merge_join_visualisation(details_window, detail):
+    original_im = get_image("http://www.interdb.jp/pg/img/fig-3-20.png")
+    resized_im = resize_image_aspect_ratio(original_im, (1000, 1000))
+    im = ImageTk.PhotoImage(resized_im)
+    label = tk.Label(details_window)
+    label.config(image=im)
+    label.image = im
+    print(detail)
+    
