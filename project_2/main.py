@@ -150,6 +150,9 @@ def view_statement_details(detail):
         case "Seq Scan": seq_scan_visualisation(details_window, detail)
         case "Hash": hash_visualisation(details_window, detail)
         case "Hash Join": hash_join_visualisation(details_window, detail)
+        case _ : 
+            label = tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20))
+            label.pack(padx=10, pady=10)
 
 def seq_scan_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
