@@ -214,9 +214,7 @@ def view_statement_details(detail):
         case "Seq Scan": seq_scan_visualisation(details_window, detail)
         case "Hash": hash_visualisation(details_window, detail)
         case "Hash Join": hash_join_visualisation(details_window, detail)
-        case _ : 
-            label = tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20))
-            label.pack(padx=10, pady=10)
+        case _ : tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20)).pack(padx=10, pady=10)
 
 def seq_scan_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
@@ -228,10 +226,8 @@ def seq_scan_visualisation(details_window, detail):
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_rows = str(detail["Actual Rows"])
-    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 20))
-    num_blks_label.pack(pady=5)
-    num_rows_label = tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 20))
-    num_rows_label.pack(pady=5)
+    tk.Label(details_window, text=f"Number of {relation_name} data block(s) read into buffer: {blks_hit}", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
@@ -244,10 +240,8 @@ def hash_visualisation(details_window, detail):
     blks_hit = str(detail["Shared Hit Blocks"])
     num_buckets = str(detail["Hash Buckets"])
     num_rows = str(detail["Actual Rows"])
-    num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20))
-    num_buckets_label.pack(pady=5)
-    num_blks_label = tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) of {relation_name} hashed into buckets", font=("Helvetica", 20))
-    num_blks_label.pack(pady=5)
+    tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"{num_rows} tuple(s) from {blks_hit} data block(s) of {relation_name} hashed into buckets", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
