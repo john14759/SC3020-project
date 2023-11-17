@@ -4,6 +4,12 @@ from test import connect_to_db, get_block_size, get_buffer_size, get_qep_image, 
 from tkinter import Tk, Label
 from threading import Thread
 import requests
+import tkinter.font as tkFont
+
+global create_legend_flag
+legend_canvas = None
+create_legend_flag = False
+click_instruction_label = None
 
 # Create the main window
 window = tk.Tk()
@@ -24,9 +30,27 @@ title_label.pack()
 sql_entry = tk.Entry(top_canvas, width=50, font=("Helvetica", 10))
 sql_entry.pack(pady=10)
 
-global create_legend_flag
-legend_canvas = None
-create_legend_flag = False
+#Function to generate legend items on legend canvas
+def create_legend_items(canvas, items, x_start, y_start, y_gap, line_width, font_size):
+    bold_font = tkFont.Font(family="Helvetica", size=font_size, weight="bold")
+    regular_font = tkFont.Font(family="Helvetica", size=font_size)
+
+    y = y_start
+    for item in items:
+        text = item["text"]
+        title, description = text.split(":", 1)
+
+        # Create bold title
+        canvas.create_text(x_start, y, text=title + ":", font=bold_font, anchor="nw")
+
+        # Calculate width of the bold title to position the description correctly
+        title_width = bold_font.measure(title + ":")
+        description_x = x_start + title_width
+
+        # Create regular description
+        canvas.create_text(description_x, y, text=description, font=regular_font, anchor="nw")
+
+        y += y_gap
 
 def create_legend():
     global create_legend_flag, legend_canvas
@@ -64,30 +88,12 @@ def create_scrollable_canvas(parent, side=tk.LEFT, padx=10, pady=10, min_width=4
     canvas.bind("<Configure>", on_canvas_configure)
     return canvas, frame
 
-#Function to generate legend items on legend canvas
-def create_legend_items(canvas, legend_items, start_x, start_y, line_height, text_width, font_size):
-
-    # Clear existing legend items
-    canvas.delete("legend_item")
-
-    bullet_diameter = 4
-    bullet_radius = bullet_diameter // 2
-    text_vertical_offset = font_size // 4
-    for i, item in enumerate(legend_items):
-        y_offset = start_y + i * line_height  # Adjust Y-coordinate to separate items
-        tag = f"legend_item_{i}"
-
-        if( i < 2):
-            canvas.create_oval(start_x - bullet_radius, y_offset + text_vertical_offset - bullet_radius, start_x + bullet_radius, y_offset + text_vertical_offset + bullet_radius, fill="black", tags=tag)
-            canvas.create_text(start_x + 10, y_offset + 10, text=item["text"], anchor="w", font=("Helvetica", 10), width=text_width, tags=tag)
-        else:
-            canvas.create_oval(start_x - bullet_radius, y_offset + 10 - bullet_radius, start_x + bullet_radius, y_offset + 10 + bullet_radius, fill="black", tags=tag)
-            canvas.create_text(start_x + 10, y_offset + 10, text=item["text"], anchor="w", font=("Helvetica", 10), width=text_width, tags=tag)
-
 # Function to execute the SQL query
 def execute_sql_query():
+    global click_instruction_label
     # Function to execute the SQL query in a separate thread
     def execute_query_thread():
+        global click_instruction_label
         try:
             connect_to_db()
 
@@ -112,15 +118,26 @@ def execute_sql_query():
             # Open the QEP image and convert it to Tkinter PhotoImage
             qep_image = Image.open("qep_tree.png")
 
-            # Resize the QEP image to your desired dimensions
-            resized_qep_img = qep_image.resize((600, 600))  # Adjust the dimensions as needed
-            resized_qep_img.save("resized_qep_tree.png")
+            max_dimensions = (600, 600)  # Maximum dimensions for the image
+            resized_qep_img = resize_image("qep_tree.png", max_dimensions)
 
             qep_image = ImageTk.PhotoImage(resized_qep_img)
+            qep_label.bind("<Button-1>", lambda e: open_fullsize_image())
 
             qep_label.config(image=qep_image)
             qep_label.image = qep_image
             qep_label.pack(side="top", fill="both", expand=True)
+
+            # Define a bold font
+            bold_font = tkFont.Font(family="Helvetica", size=10, weight="bold")
+
+            # Check if the label already exists, if not create it
+            if click_instruction_label is None:
+                click_instruction_label = tk.Label(qep_label.master, text="Click on the image to view it in full size", font=bold_font)
+                click_instruction_label.pack(side="top")
+            else:
+                # Optionally update the label text or properties if needed
+                click_instruction_label.config(text="Click on the image to view it in full size", font=bold_font)
 
             # Update the statements in the right frame
             analysis_output_label.config(text='\n'.join(statements), font=("Helvetica", 10))
@@ -142,6 +159,53 @@ def execute_sql_query():
     # Create a thread to execute the query
     query_thread = Thread(target=execute_query_thread)
     query_thread.start()
+
+def resize_image(image_path, max_size):
+    image = Image.open(image_path)
+    original_size = image.size
+
+    ratio = min(max_size[0] / original_size[0], max_size[1] / original_size[1])
+    new_size = tuple([int(x * ratio) for x in original_size])
+
+    # Use Image.Resampling.LANCZOS for high-quality downsampling
+    resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
+    return resized_image
+
+def open_fullsize_image():
+    new_window = tk.Toplevel()
+    new_window.title("Full-Size QEP Image")
+
+    # Load the full-size image
+    fullsize_image = Image.open("qep_tree.png")
+    photo_image = ImageTk.PhotoImage(fullsize_image)
+
+    # Get screen width and height
+    screen_width = new_window.winfo_screenwidth()
+    screen_height = new_window.winfo_screenheight()
+
+    # Set max dimensions for the window
+    max_window_width = min(fullsize_image.width, screen_width - 100)  # 100 pixels less than screen width
+    max_window_height = min(fullsize_image.height, screen_height - 100)  # 100 pixels less than screen height
+
+    # Set the geometry of the new window
+    new_window.geometry(f"{max_window_width}x{max_window_height}")
+
+    # Create canvas and scrollbars
+    canvas = tk.Canvas(new_window)
+    scrollbar_y = tk.Scrollbar(new_window, orient="vertical", command=canvas.yview)
+    scrollbar_x = tk.Scrollbar(new_window, orient="horizontal", command=canvas.xview)
+    canvas.configure(yscrollcommand=scrollbar_y.set, xscrollcommand=scrollbar_x.set)
+
+    scrollbar_y.pack(side="right", fill="y")
+    scrollbar_x.pack(side="bottom", fill="x")
+    canvas.pack(side="left", fill="both", expand=True)
+
+    # Add image to canvas
+    canvas.create_image(0, 0, image=photo_image, anchor="nw")
+
+    # Configure scroll region
+    canvas.config(scrollregion=canvas.bbox("all"))
+    canvas.image = photo_image  # Keep a reference
 
 def view_statement_details(detail):
     details_window = tk.Toplevel(window)
@@ -213,7 +277,6 @@ legend_items = [
     {"text": "Shared Hit Blocks: Number of shared blocks read into cache"},
     {"text": "Local Hit Blocks: Number of local blocks read into cache"},
 ]
-
 
 # Create a label to display the QEP image in the left canvas
 qep_label = tk.Label(left_frame, font=("Helvetica", 12))
