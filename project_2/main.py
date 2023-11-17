@@ -148,6 +148,7 @@ def view_statement_details(detail):
     details_window.title("Details")
     match detail["Node Type"]:
         case "Seq Scan": seq_scan_visualisation(details_window, detail)
+        case "Hash": hash_visualisation(details_window, detail)
 
 def seq_scan_visualisation(details_window, detail):
     im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
@@ -163,9 +164,21 @@ def seq_scan_visualisation(details_window, detail):
     num_blks_label.pack(pady=10)
     num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 20))
     num_rows_label.pack(pady=5)
-    print(detail)
-    print("\n")
 
+def hash_visualisation(details_window, detail):
+    im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
+    im = ImageTk.PhotoImage(im)
+    label = tk.Label(details_window)
+    label.config(image=im)
+    label.image= im
+    label.pack(padx=10, pady=10)
+    relation_name = detail["relation_name"]
+    blks_hit = str(detail["Shared Hit Blocks"])
+    num_buckets = str(detail["Hash Buckets"])
+    num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20))
+    num_buckets_label.pack(pady=10)
+    num_blks_label = tk.Label(details_window, text=f"{blks_hit} data blocks of {relation_name} hashed into buckets", font=("Helvetica", 20))
+    num_blks_label.pack(pady=5)
 
 # Create a button to execute the SQL query in the top canvas
 execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))

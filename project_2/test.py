@@ -242,6 +242,7 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
                 if 'Seq Scan' in child_plan.get('Node Type', ''):
                     child_relation = child_plan.get('Relation Name', 'NULL')
                     statement += f"{indent_str}  Hash the results of sequential scan on relation {child_relation}.\n"
+                    qep["relation_name"] = child_relation
 
         if 'Hash Join' in node_type:
             if 'Plans' in qep:
