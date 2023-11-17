@@ -272,8 +272,8 @@ analysis_output_label.place()
 
 # Legend items
 legend_items = [
-    {"text": "Start-up cost: Estimated Postgres computational units to start up a node to start process the query."},
-    {"text": "Total cost: Estimated Postgres computational units to finish process the query and return results"},
+    {"text": "Start-up cost: Estimated units to start up a node to start a query"},
+    {"text": "Total cost: Estimated units to finish processing and return results."},
     {"text": "Shared Hit Blocks: Number of shared blocks read into cache"},
     {"text": "Local Hit Blocks: Number of local blocks read into cache"},
 ]
