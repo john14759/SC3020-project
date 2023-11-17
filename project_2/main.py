@@ -166,8 +166,7 @@ def resize_image(image_path, max_size):
 
     ratio = min(max_size[0] / original_size[0], max_size[1] / original_size[1])
     new_size = tuple([int(x * ratio) for x in original_size])
-
-    # Use Image.Resampling.LANCZOS for high-quality downsampling
+    
     resized_image = image.resize(new_size, Image.Resampling.LANCZOS)
     return resized_image
 
@@ -215,12 +214,22 @@ def view_statement_details(detail):
         case "Hash": hash_visualisation(details_window, detail)
         case "Hash Join": hash_join_visualisation(details_window, detail)
         case _ : 
-            label = tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20))
+            label = tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 12))
             label.pack(padx=10, pady=10)
 
+def resize_image_aspect_ratio(image, max_size):
+    original_size = image.size
+    ratio = min(max_size[0] / original_size[0], max_size[1] / original_size[1])
+    new_size = tuple([int(x * ratio) for x in original_size])
+    return image.resize(new_size, Image.Resampling.LANCZOS)
+
 def seq_scan_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
+    response = requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True)
+    im = Image.open(response.raw)
+
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(im, (800, 800))
+    im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=im)
     label.image= im
@@ -228,14 +237,18 @@ def seq_scan_visualisation(details_window, detail):
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_rows = str(detail["Actual Rows"])
-    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 20))
+    num_blks_label = tk.Label(details_window, text=f"Number of {relation_name} data blocks read: {blks_hit}", font=("Helvetica", 10))
     num_blks_label.pack(pady=10)
-    num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 20))
+    num_rows_label = tk.Label(details_window, text=f"Number of row matches: {num_rows}", font=("Helvetica", 12))
     num_rows_label.pack(pady=5)
 
 def hash_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
+    response = requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True)
+    im = Image.open(response.raw)
+
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(im, (800, 800))
+    im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=im)
     label.image= im
@@ -243,14 +256,18 @@ def hash_visualisation(details_window, detail):
     relation_name = detail["relation_name"]
     blks_hit = str(detail["Shared Hit Blocks"])
     num_buckets = str(detail["Hash Buckets"])
-    num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 20))
+    num_buckets_label = tk.Label(details_window, text=f"Buckets available: {num_buckets}", font=("Helvetica", 12))
     num_buckets_label.pack(pady=10)
-    num_blks_label = tk.Label(details_window, text=f"{blks_hit} data blocks of {relation_name} hashed into buckets", font=("Helvetica", 20))
+    num_blks_label = tk.Label(details_window, text=f"{blks_hit} data blocks of {relation_name} hashed into buckets", font=("Helvetica", 12))
     num_blks_label.pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
+    response = requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True)
+    im = Image.open(response.raw)
+
+    # Resize the image
+    resized_im = resize_image_aspect_ratio(im, (800, 800))
+    im = ImageTk.PhotoImage(resized_im)
     label = tk.Label(details_window)
     label.config(image=im)
     label.image= im
@@ -259,7 +276,7 @@ def hash_join_visualisation(details_window, detail):
     print("/n")
 
 # Create a button to execute the SQL query in the top canvas
-execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
+execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 12))
 execute_button.pack(pady=10)
 
 # Create scrollable left and right canvases
