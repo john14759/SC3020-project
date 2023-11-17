@@ -38,6 +38,7 @@ def get_qep_image(query):
     try:
         explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
         cursor.execute(explain_query)
+        global qep_json
         qep_json = cursor.fetchone()[0][0]
         print(qep_json)
         analyze_qep(qep_json['Plan'])
@@ -55,22 +56,14 @@ def get_qep_image(query):
         # Handle exceptions, and return an informative message
         return [f"Error analyzing the query: {str(e)}"]
     
-def get_qep_statements(query):
-    try:
-        explain_query = f"EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) {query}"
-        cursor.execute(explain_query)
-        qep_json = cursor.fetchone()[0][0]
-        statements = []
+def get_qep_statements():
+    # Check if the QEP image is available in the JSON
+    if "Plan" in qep_json:
+        _, statements, details = analyze_qep(qep_json["Plan"])
+        return statements, details
+    else:
+        return None
 
-        # Check if the QEP image is available in the JSON
-        if "Plan" in qep_json:
-            _, statements = analyze_qep(qep_json["Plan"], statements=statements)
-            return statements
-        else:
-            return None
-    except Exception as e:
-        # Handle exceptions, and return an informative message
-        return [f"Error analyzing the query: {str(e)}"]
 
 def get_buffer_size():
     cursor.execute("show shared_buffers")
@@ -191,7 +184,7 @@ def extract_relations_for_join(plans):
                 break  # Stop after finding two relations
     return left_relation, right_relation
 
-def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
+def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, details=None):
     """
     Analyzes the Query Execution Plan (QEP) and prints a step-by-step analysis.
 
@@ -210,12 +203,15 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
     # Initialize the statements list if not provided
     if statements is None:
         statements = []
+    
+    if details is None: 
+        details = []
 
     # Recursively analyze child nodes if they exist
     plans = qep.get('Plans', [])
     for i, plan in enumerate(reversed(plans), start=1):
         # Additional indentation for child nodes
-        step, statements = analyze_qep(plan, indent + 2, first_line_indent, step, statements)
+        step, statements, details = analyze_qep(plan, indent + 2, first_line_indent, step, statements, details)
 
     # Append details of the current node to the statements list
     node_type = qep.get('Node Type', 'NULL')
@@ -295,8 +291,43 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None):
 
     # Append the statement to the list
     statements.append(statement)
+    details.append(qep)
 
-    return step + 1, statements
+    return step + 1, statements, details
+
+def extract_hashed_relation(qep):
+    # Assume the QEP node passed here is the 'Hash Join' node
+    hash_cond = qep.get('Hash Cond', '')
+    
+    hashed_relation_name = None
+    other_relation_name = None
+    hash_plan_node = None
+    seq_scan_relation_name = None
+    
+    # Iterate over the child plans of the hash join node
+    for child_plan in qep['Plans']:
+        if child_plan['Node Type'] == 'Hash':
+            hash_plan_node = child_plan
+            # The relation being hashed is typically the one being sequentially scanned within this Hash node
+            if 'Plans' in child_plan and child_plan['Plans'][0]['Node Type'] == 'Seq Scan':
+                hashed_relation_name = child_plan['Plans'][0]['Relation Name']
+        elif child_plan['Node Type'] == 'Seq Scan':
+            seq_scan_relation_name = child_plan['Relation Name']
+    
+    if hashed_relation_name and seq_scan_relation_name:
+        other_relation_name = seq_scan_relation_name
+    elif hash_plan_node and not hashed_relation_name:
+        # This case handles if there's a hash node but no sequential scan within it
+        # You may need to check for index scans or other node types depending on your specific QEP structure
+        # and update logic accordingly
+        other_relation_name = 'UNKNOWN'
+    
+    return hashed_relation_name, other_relation_name
+
+
+
+
+
 
 def extract_hashed_relation(qep):
     # Assume the QEP node passed here is the 'Hash Join' node
