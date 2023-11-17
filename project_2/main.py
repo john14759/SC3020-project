@@ -16,7 +16,7 @@ window = tk.Tk()
 window.title("SQL Query Executor")
 
 # Set the window size to cover the entire screen
-window.geometry(f"{int(4/5*window.winfo_screenwidth())}x{window.winfo_screenheight()}")
+window.geometry(f"{int(9/10*window.winfo_screenwidth())}x{window.winfo_screenheight()}")
 
 # Create a top canvas for title, entry field, and button
 top_canvas = tk.Canvas(window)
@@ -214,14 +214,14 @@ def view_statement_details(detail):
         case "Seq Scan": seq_scan_visualisation(details_window, detail)
         case "Hash": hash_visualisation(details_window, detail)
         case "Hash Join": hash_join_visualisation(details_window, detail)
+        case "Aggregate": aggregate_visualisation(details_window, detail)
+        case "Nested Loop": nested_loop_visualisation(details_window, detail)
         case _ : tk.Label(details_window, text=f"No visualisation available for this operation", font=("Helvetica", 20)).pack(padx=10, pady=10)
 
 def seq_scan_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
     label = tk.Label(details_window)
-    label.config(image=im)
-    label.image= im
+    label.config(image=seq_scan_im)
+    label.image= seq_scan_im
     label.pack(padx=10, pady=10)
     relation_name = detail["Relation Name"]
     blks_hit = str(detail["Shared Hit Blocks"])
@@ -230,11 +230,9 @@ def seq_scan_visualisation(details_window, detail):
     tk.Label(details_window, text=f"Number of tuple matches: {num_rows}", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
     label = tk.Label(details_window)
-    label.config(image=im)
-    label.image= im
+    label.config(image=hash_im)
+    label.image= hash_im
     label.pack(padx=10, pady=10)
     relation_name = detail["relation_name"]
     blks_hit = str(detail["Shared Hit Blocks"])
@@ -245,11 +243,9 @@ def hash_visualisation(details_window, detail):
     tk.Label(details_window, text=f"A hash table with hash attribute to bucket mapping is stored in the buffer", font=("Helvetica", 20)).pack(pady=5)
 
 def hash_join_visualisation(details_window, detail):
-    im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
-    im = ImageTk.PhotoImage(im)
     label = tk.Label(details_window)
-    label.config(image=im)
-    label.image= im
+    label.config(image=hash_join_im)
+    label.image = hash_join_im
     label.pack(padx=10, pady=10)
     inner_set = detail["inner_set"]
     outer_set = detail["outer_set"]
@@ -257,6 +253,31 @@ def hash_join_visualisation(details_window, detail):
     tk.Label(details_window, text=f"Buckets of {inner_set} data blocks as the inner set", font=("Helvetica", 20)).pack(pady=5)
     tk.Label(details_window, text=f"{outer_set_rows} tuples in {outer_set} data blocks previously read into the buffer as the outer set", font=("Helvetica", 20)).pack(pady=5)
     tk.Label(details_window, text=f"For each tuple in the outer set, the hash table is probed for the matching bucket. Then the outer set tuple joins with each tuple in the bucket", font=("Helvetica", 20)).pack(pady=5)
+
+def aggregate_visualisation(details_window, detail):
+    label = tk.Label(details_window)
+    label.config(image=seq_scan_im)
+    label.image = seq_scan_im
+    label.pack(padx=10, pady=10)
+    num_output_rows = detail["Actual Rows"]
+    num_rows_removed = detail["Rows Removed by Filter"]
+    num_input_rows = num_output_rows + num_rows_removed
+    tk.Label(details_window, text=f"Number of input tuples: {num_input_rows}", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"Number of output tuples: {num_output_rows}", font=("Helvetica", 20)).pack(pady=5)
+
+def nested_loop_visualisation(details_window, detail):
+    label = tk.Label(details_window)
+    label.config(image=nested_loop_im)
+    label.image = nested_loop_im
+    label.pack(padx=10, pady=10)
+    num_output_rows = detail["Actual Rows"]
+    num_inner_rows = detail["inner_rows"]
+    num_other_rows = detail["outer_rows"]
+    num_loops = detail["Actual Loops"]
+    tk.Label(details_window, text=f"{num_inner_rows} inner tuple(s) join on {num_other_rows} outer tuple(s), output {num_output_rows} tuples", font=("Helvetica", 20)).pack(pady=5)
+    tk.Label(details_window, text=f"{num_loops} loop(s) required", font=("Helvetica", 20)).pack(pady=5)
+
+
 
 # Create a button to execute the SQL query in the top canvas
 execute_button = tk.Button(top_canvas, text="Execute Query", command=execute_sql_query, font=("Helvetica", 10))
@@ -285,6 +306,19 @@ qep_label.place()
 # Create a label to display the result in the left canvas
 result_label = tk.Label(left_frame, text="", font=("Helvetica", 12))
 result_label.place()
+
+# Images for visualisation
+seq_scan_im = Image.open(requests.get("https://postgrespro.com/media/2022/03/31/seqscan1-en.png", stream=True).raw)
+seq_scan_im = ImageTk.PhotoImage(seq_scan_im)
+
+hash_im = Image.open(requests.get("https://postgrespro.com/media/2019/05/23/i3.png", stream=True).raw)
+hash_im = ImageTk.PhotoImage(hash_im)
+
+hash_join_im = Image.open(requests.get("https://postgrespro.com/media/2022/08/11/hash1-en.png", stream=True).raw)
+hash_join_im = ImageTk.PhotoImage(hash_join_im)
+
+nested_loop_im = Image.open(requests.get("http://www.interdb.jp/pg/img/fig-3-16.png", stream=True).raw)
+nested_loop_im = ImageTk.PhotoImage(nested_loop_im)
 
 # Start the mainloop
 window.mainloop()

@@ -247,7 +247,8 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
         if 'Hash Join' in node_type:
             # Extract the hashed and other relation names
             hashed_relation_name, other_relation_name = extract_hashed_relation(qep)
-
+            qep["inner_set"] = hashed_relation_name
+            qep["outer_set"] = other_relation_name
             # Now we can use hashed_relation_name and other_relation_name in our statements
             if hashed_relation_name:
                 statement += f"{indent_str}  Hash the results of sequential scan on relation {hashed_relation_name}.\n"
@@ -258,6 +259,11 @@ def analyze_qep(qep, indent=0, first_line_indent=0, step=1, statements=None, det
 
     if 'Nested Loop' in node_type or 'Merge Join' in node_type:
         left_relation, right_relation = extract_relations_for_join(plans)
+        for child_plan in qep["Plans"]:
+            if "Outer" in child_plan["Parent Relationship"]:
+                qep["outer_rows"] = child_plan["Actual Rows"]
+            elif "Inner" in child_plan["Parent Relationship"]:
+                qep["inner_rows"] = child_plan["Actual Rows"]
         if left_relation and right_relation:
             # Construct a statement that describes the join operation
             join_method = "merge join" if 'Merge Join' in node_type else "nested loop join"
