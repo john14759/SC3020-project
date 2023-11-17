@@ -70,14 +70,23 @@ def create_legend():
 
 # Function to create scrollable canvas
 def create_scrollable_canvas(parent, side=tk.LEFT, padx=10, pady=10, min_width=400):
-    canvas = tk.Canvas(parent, width=min_width)
-    scrollbar = tk.Scrollbar(parent, orient="vertical", command=canvas.yview)
-    canvas.configure(yscrollcommand=scrollbar.set)
-    canvas.pack(side=side, fill="both", expand=True, padx=padx, pady=pady)
-    scrollbar.pack(side="right", fill="y")
-    frame = tk.Frame(canvas, width=min_width)
+    # Create a frame to contain the canvas and scrollbar
+    container = tk.Frame(parent)
+    container.pack(side=side, fill="both", expand=True, padx=padx, pady=pady)
 
-    canvas_frame = canvas.create_window((min_width/2, 0), window=frame, anchor='center')
+    # Create the canvas inside the container
+    canvas = tk.Canvas(container, width=min_width)
+    canvas.pack(side=tk.LEFT, fill="both", expand=True)
+
+    # Create the scrollbar inside the container
+    scrollbar = tk.Scrollbar(container, orient="vertical", command=canvas.yview)
+    scrollbar.pack(side="right", fill="y")
+
+    # Configure the canvas
+    canvas.configure(yscrollcommand=scrollbar.set)
+    frame = tk.Frame(canvas, width=min_width)
+    canvas_frame = canvas.create_window((min_width/2, 0), window=frame, anchor='nw')
+
     frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
     def on_canvas_configure(event):
